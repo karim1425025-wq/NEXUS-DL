@@ -129,11 +129,61 @@
             .playlist-actions { width: 100%; justify-content: space-between; }
             .trim-group { flex-wrap: wrap; }
         }
+/* ================== إعلانات الجوانب المحترمة ================== */
+.ads-container {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 160px; /* العرض القياسي لإعلانات السكاي سكريبر */
+    height: 600px; /* الطول القياسي */
+    background: var(--card-bg);
+    border: 1px dashed var(--border-color);
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    backdrop-filter: blur(10px);
+    z-index: 50;
+    overflow: hidden;
+}
+
+.ads-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* تحديد مكان الإعلان اليمين والشمال */
+.ad-right { right: 20px; }
+.ad-left { left: 20px; }
+
+/* إخفاء الإعلانات الجانبية في الموبايل والشاشات الصغيرة عشان متبوظش الموقع */
+@media (max-width: 1250px) {
+    .ads-container {
+        display: none;
+    }
+}
     </style>
 </head>
 <body>
 
     <div class="grid-bg"></div>
+<div class="ads-container ad-right">
+    <div style="padding: 10px;">
+        <i class="fas fa-ad" style="font-size: 2rem; color: var(--neon-blue); margin-bottom: 10px;"></i>
+        <br>مساحة إعلانية<br>(أمازون / تكنولوجيا)
+    </div>
+</div>
+
+<div class="ads-container ad-left">
+    <div style="padding: 10px;">
+        <i class="fas fa-ad" style="font-size: 2rem; color: var(--neon-purple); margin-bottom: 10px;"></i>
+        <br>مساحة إعلانية<br>(أمازون / تكنولوجيا)
+    </div>
+</div>
 
     <nav class="navbar">
         <div class="nav-logo">NEXUS<span>-DL</span></div>
