@@ -102,6 +102,19 @@
         .status-msg { margin-top: 20px; font-weight: bold; font-size: 0.95rem; display: none; text-align: center; padding: 12px; border-radius: 8px; background: rgba(0,0,0,0.2); }
         .status-error { color: #ff3366; border: 1px solid rgba(255, 51, 102, 0.3); }
 
+        /* 🔥 أستايلات الخزنة وشريط التحميل الجديدة المتوافقة مع الموقع 🔥 */
+        .vault-card { margin-top: 40px; padding: 25px; background: rgba(20, 20, 35, 0.4); border: 1px dashed var(--neon-purple); border-radius: 16px; text-align: center; backdrop-filter: blur(10px); }
+        .vault-card h3 { color: var(--neon-purple); margin-bottom: 10px; }
+        .vault-card p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px; }
+        .vault-input { width: 100%; max-width: 300px; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--input-bg); color: var(--text-main); text-align: center; font-weight: bold; margin-bottom: 15px; outline: none; }
+        .vault-input:focus { border-color: var(--neon-purple); }
+        .btn-vault { background: linear-gradient(45deg, #bc13fe, #0052ff); border: none; padding: 12px 25px; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; }
+        
+        .progress-container { display: none; margin-top: 20px; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; text-align: center; }
+        .ticket-display { color: var(--neon-blue); font-size: 1.2rem; font-weight: bold; margin-bottom: 10px; letter-spacing: 2px; }
+        .progress-bar-bg { width: 100%; height: 10px; background: rgba(255, 255, 255, 0.1); border-radius: 5px; margin-top: 10px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: var(--neon-blue); width: 0%; transition: 0.3s; }
+
         @media (max-width: 600px) {
             .video-preview { flex-direction: column; align-items: center; text-align: center; }
             .thumb-container { width: 100%; aspect-ratio: 16/9; margin-bottom: 15px; }
@@ -199,6 +212,15 @@
                             </div>
 
                             <div class="video-source" id="videoSource">مصدر الفيديو</div>
+                            
+                            <div id="progressContainer" class="progress-container">
+                                <div style="color: var(--text-muted); font-size: 0.9rem;">تذكرتك (انسخها لو هتقفل):</div>
+                                <div id="ticketDisplay" class="ticket-display">--</div>
+                                <div id="progressText" style="font-weight: bold;">جاري التحميل... 0%</div>
+                                <div class="progress-bar-bg">
+                                    <div id="progressFill" class="progress-bar-fill"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -219,6 +241,15 @@
                     <div id="playlistItems"></div>
                 </div>
             </div>
+
+            <div class="vault-card">
+                <h3><i class="fas fa-lock"></i> خزنة الملفات</h3>
+                <p>لو قفلت الصفحة بالغلط، اكتب رقم تذكرتك هنا واستلم ملفك الجاهز.</p>
+                <input type="text" id="vaultTicketInput" class="vault-input" placeholder="مثال: Ticket_123456">
+                <br>
+                <button class="btn-vault" onclick="restoreFromVault()"><i class="fas fa-box-open"></i> استرجاع الملف</button>
+            </div>
+
         </div>
     </div>
 
@@ -227,6 +258,7 @@
         const DOWNLOAD_URL = "http://localhost:3000/api/download"; 
         const CONVERT_URL = "http://localhost:3000/api/convert"; 
         const PROXY_URL = "http://localhost:3000/api/proxy"; 
+        const VAULT_URL = "http://localhost:3000/api/vault"; // مسار الخزنة
 
         const translations = {
             ar: {
@@ -314,14 +346,13 @@
             });
         }
 
-        // 🔥 الدالة اللي بتعالج الوقت المكتوب (ثواني أو دقائق) بذكاء
         function formatTrimTime(val, unit) {
             if (!val) return '';
             val = val.trim();
-            if (val.includes(':')) return val; // لو اليوزر كتب 01:15 بنفسه هيسيبها زي ما هي
+            if (val.includes(':')) return val; 
             if (!isNaN(val)) {
-                if (unit === 'min') return val + ':00'; // لو اختار دقايق وكتب 7 هتبقي 7:00
-                if (unit === 'sec') return val; // لو اختار ثواني وكتب 7 هتبقي 7
+                if (unit === 'min') return val + ':00'; 
+                if (unit === 'sec') return val; 
             }
             return val;
         }
@@ -367,38 +398,49 @@
             }
         }
 
+        // 🔥 الدالة المعدلة لدعم التذاكر وشريط التحميل 🔥
         function fetchMergedDownload(index, btnElement) {
             const formatInfo = currentFormats[index];
             const originalHtml = btnElement.innerHTML;
-            
             const customTitle = document.getElementById('videoTitle').value.trim() || 'Nexus_Media';
             
-            // قراءة وحدة القص والوقت ومعالجتها
             const unit = document.getElementById('trimUnit').value;
             const trimStart = formatTrimTime(document.getElementById('trimStart').value, unit);
             const trimEnd = formatTrimTime(document.getElementById('trimEnd').value, unit);
             
             const clientId = Date.now().toString();
+            const ticketId = 'Ticket_' + Date.now(); // توليد رقم التذكرة
 
             saveToHistory(customTitle, currentVideoUrl, document.getElementById('videoThumb').src);
 
             btnElement.disabled = true;
             btnElement.innerHTML = `<i class="fas fa-spinner fa-spin"></i> 0%`;
 
+            // إظهار منطقة التحميل الخاصة بالتذكرة
+            document.getElementById('progressContainer').style.display = 'block';
+            document.getElementById('ticketDisplay').innerText = ticketId;
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('progressText').innerText = 'جاري التجهيز... 0%';
+
             const evtSource = new EventSource(`${BACKEND_URL.replace('/info', '/progress')}?id=${clientId}`);
             evtSource.onmessage = function(e) {
                 if (e.data === 'DONE') {
                     btnElement.innerHTML = `<i class="fas fa-check"></i>`;
                     btnElement.disabled = false;
+                    document.getElementById('progressFill').style.width = '100%';
+                    document.getElementById('progressText').innerText = '✅ اكتمل! جاري حفظ الملف...';
                     evtSource.close();
                     setTimeout(() => { btnElement.innerHTML = originalHtml; }, 3000);
                 } else {
-                    btnElement.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${e.data}%`;
+                    const percent = e.data;
+                    btnElement.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${percent}%`;
+                    document.getElementById('progressFill').style.width = `${percent}%`;
+                    document.getElementById('progressText').innerText = `جاري التحميل... ${percent}%`;
                 }
             };
             evtSource.onerror = function() { evtSource.close(); };
             
-            let dlUrl = `${DOWNLOAD_URL}?url=${encodeURIComponent(currentVideoUrl)}&format_id=${formatInfo.format_id || formatInfo.id}&type=${formatInfo.type}&needsMerge=${formatInfo.needsMerge}&customName=${encodeURIComponent(customTitle)}&clientId=${clientId}`;
+            let dlUrl = `${DOWNLOAD_URL}?url=${encodeURIComponent(currentVideoUrl)}&format_id=${formatInfo.format_id || formatInfo.id}&type=${formatInfo.type}&needsMerge=${formatInfo.needsMerge}&customName=${encodeURIComponent(customTitle)}&clientId=${clientId}&ticketId=${ticketId}`;
             if(trimStart) dlUrl += `&trimStart=${encodeURIComponent(trimStart)}`;
             if(trimEnd) dlUrl += `&trimEnd=${encodeURIComponent(trimEnd)}`;
             
@@ -406,6 +448,14 @@
             iframe.style.display = 'none';
             iframe.src = dlUrl;
             document.body.appendChild(iframe);
+        }
+
+        // 🔥 دالة استرجاع الملف من الخزنة 🔥
+        function restoreFromVault() {
+            const ticketInput = document.getElementById('vaultTicketInput').value.trim();
+            if (!ticketInput) return alert(currentLang === 'ar' ? 'أدخل رقم التذكرة أولاً!' : 'Enter ticket ID first!');
+            
+            window.open(`${VAULT_URL}?ticketId=${ticketInput}`, '_blank');
         }
 
         function downloadPlaylistItem(btnElement, url, inputId, selectId, clientId) {
@@ -432,7 +482,9 @@
             };
             evtSource.onerror = function() { evtSource.close(); };
 
-            let dlUrl = `${DOWNLOAD_URL}?url=${encodeURIComponent(url)}&format_id=${encodeURIComponent(formatVal)}&type=${type}&needsMerge=${needsMerge}&customName=${encodeURIComponent(customTitle)}&clientId=${clientId}`;
+            // في البلاي ليست بنديله رقم تذكرة برضه عشان يتحفظ في الخزنة
+            const ticketId = 'Ticket_' + Date.now();
+            let dlUrl = `${DOWNLOAD_URL}?url=${encodeURIComponent(url)}&format_id=${encodeURIComponent(formatVal)}&type=${type}&needsMerge=${needsMerge}&customName=${encodeURIComponent(customTitle)}&clientId=${clientId}&ticketId=${ticketId}`;
             
             const iframe = document.createElement('iframe');
             iframe.style.display = 'none';
@@ -520,6 +572,9 @@
             const singleVideoArea = document.getElementById('singleVideoArea');
             const playlistArea = document.getElementById('playlistArea');
 
+            // إخفاء منطقة التذكرة لو بنحلل فيديو جديد
+            document.getElementById('progressContainer').style.display = 'none';
+
             if (!urlInput || !urlInput.includes('http')) {
                 errorMsg.innerText = t.msgEmpty; errorMsg.style.display = 'block'; return;
             }
@@ -587,7 +642,7 @@
         initApp();
     </script>
 <div style="text-align: center; margin-top: 30px; padding-bottom: 20px;">
-    <a href="terms.html" style="color: #888; text-decoration: none; font-size: 14px;">شروط الاستخدام وإخلاء المسؤولية</a>
+    <a href="terms.html" style="color: var(--text-muted); text-decoration: none; font-size: 14px; transition: 0.3s;" onmouseover="this.style.color='var(--neon-blue)'" onmouseout="this.style.color='var(--text-muted)'">شروط الاستخدام وإخلاء المسؤولية</a>
 </div>
 </body>
 </html>
