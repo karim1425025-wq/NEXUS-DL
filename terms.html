@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="html-tag">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">شروط الاستخدام وإخلاء المسؤولية | NEXUS</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            line-height: 1.8;
+            padding: 20px;
+            margin: 0;
+            transition: all 0.3s ease;
+        }
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: #1e1e1e;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            border: 1px solid #333;
+        }
+        h1 {
+            color: #ffffff;
+            text-align: center;
+            border-bottom: 2px solid #e74c3c;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #e74c3c;
+            margin-top: 30px;
+        }
+        ul {
+            list-style-type: square;
+            padding: 0 20px;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        .footer-note {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 0.9em;
+            color: #888;
+        }
+        .back-btn {
+            display: block;
+            width: 200px;
+            margin: 30px auto 10px;
+            padding: 12px;
+            text-align: center;
+            background-color: #e74c3c;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .back-btn:hover {
+            background-color: #c0392b;
+        }
+        /* تصميم زرار الترجمة */
+        #google_translate_element {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="google_translate_element"></div>
+
+    <div id="content-area">
+        <h1>شروط الاستخدام وإخلاء المسؤولية</h1>
+        
+        <p>مرحباً بك في أداة NEXUS. باستخدامك لهذا الموقع، فإنك توافق بالكامل على الشروط الآتية:</p>
+
+        <h2>1. طبيعة الخدمة</h2>
+        <p>هذا الموقع عبارة عن <strong>أداة برمجية</strong> تتيح للمستخدمين معالجة الروابط المتاحة للعامة. نحن لا نمتلك، ولا نتحكم في، ولا نستضيف أي محتوى محمي بحقوق الطبع والنشر على خوادمنا بشكل دائم.</p>
+
+        <h2>2. المسؤولية القانونية للمستخدم</h2>
+        <ul>
+            <li>المستخدم هو المسؤول الأول والأخير عن كيفية استخدامه لهذه الأداة وما يقوم بتحميله.</li>
+            <li>يُمنع منعاً باتاً استخدام هذا الموقع لتحميل أي محتوى محمي بحقوق الملكية الفكرية بغرض إعادة نشره أو التربح منه تجارياً.</li>
+            <li>الخدمة مصممة للاستخدام الشخصي العادل (Fair Use) فقط.</li>
+        </ul>
+
+        <h2>3. عدم الاحتفاظ بالملفات</h2>
+        <p>نؤكد أن خوادمنا لا تقوم بتخزين أو أرشفة أي فيديوهات أو ملفات صوتية يتم معالجتها. تتم معالجة الملفات مؤقتاً وحذفها تلقائياً وبشكل نهائي فور انتهاء عملية التحميل.</p>
+
+        <h2>4. إخلاء المسؤولية (DMCA)</h2>
+        <p>لا يتحمل الموقع أو مطوروه أي مسؤولية قانونية أو أخلاقية تجاه أي سوء استخدام للأداة من قِبل الأفراد. طلبات الحذف يجب توجيهها للمنصة الأصلية.</p>
+
+        <a href="index.html" class="back-btn" id="back-link">العودة للصفحة الرئيسية</a>
+        
+        <div class="footer-note" id="footer-text">
+            تمت صياغة هذه الشروط لحماية حقوق الملكية وضمان الاستخدام العادل للتكنولوجيا.
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    // 1. إعدادات جوجل للترجمة (كل اللغات مسموحة ما عدا العبري)
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'ar',
+        // ضفنا لغات العالم الشهيرة كلها وتجاهلنا 'he' و 'iw'
+        includedLanguages: 'en,fr,es,de,it,ru,zh-CN,ja,ko,pt,tr,hi,ur,fa,nl,sv,pl,id,ms,th,vi',
+        layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+      }, 'google_translate_element');
+    }
+
+    // 2. سكريبت اكتشاف اللغة (القلب النابض للفكرة بتاعتك)
+    window.onload = function() {
+        var userLang = navigator.language || navigator.userLanguage;
+        
+        // لو متصفح المستخدم عبري
+        if (userLang.toLowerCase().includes('he') || userLang.toLowerCase().includes('iw')) {
+            // إخفاء زرار الترجمة عشان ميقدرش يغيرها
+            document.getElementById('google_translate_element').style.display = 'none';
+            
+            // تحويل اتجاه الصفحة من الشمال لليمين
+            var htmlTag = document.getElementById('html-tag');
+            htmlTag.setAttribute('lang', 'en');
+            htmlTag.setAttribute('dir', 'ltr');
+            
+            // حقن النص الإنجليزي مكان العربي
+            document.getElementById('page-title').innerText = "Terms of Use & Disclaimer | NEXUS";
+            document.getElementById('content-area').innerHTML = `
+                <h1>Terms of Use & Disclaimer</h1>
+                <p>Welcome to NEXUS. By using this website, you fully agree to the following terms:</p>
+                
+                <h2>1. Nature of the Service</h2>
+                <p>This website is a <strong>software tool</strong> that allows users to process publicly available links. We do not own, control, or permanently host any copyrighted content on our servers.</p>
+                
+                <h2>2. User Legal Responsibility</h2>
+                <ul>
+                    <li>The user is solely responsible for how they use this tool and what they download.</li>
+                    <li>It is strictly prohibited to use this site to download any copyrighted content for the purpose of republishing or commercial gain.</li>
+                    <li>The service is designed for personal Fair Use only.</li>
+                </ul>
+                
+                <h2>3. No File Retention</h2>
+                <p>We confirm that our servers do not store or archive any processed videos or audio files. Files are processed temporarily and deleted automatically and permanently immediately after the download process is complete.</p>
+                
+                <h2>4. Disclaimer (DMCA)</h2>
+                <p>The site and its developers bear no legal or ethical responsibility for any misuse of the tool by individuals. Takedown requests must be directed to the original platform hosting the content.</p>
+                
+                <a href="index.html" class="back-btn">Return to Homepage</a>
+                
+                <div class="footer-note">
+                    These terms were drafted to protect property rights and ensure the fair use of technology.
+                </div>
+            `;
+        }
+    };
+</script>
+<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+</body>
+</html>
