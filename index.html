@@ -15,644 +15,672 @@
             --text-muted: #8b8b9f; --border-color: rgba(255, 255, 255, 0.05);
             --input-bg: rgba(0, 0, 0, 0.4); --row-hover: rgba(0, 243, 255, 0.05);
         }
+        [data-theme="light"] {
+            --bg-color: #f0f2f5; --card-bg: rgba(255, 255, 255, 0.9); --nav-bg: rgba(255, 255, 255, 0.9);
+            --neon-blue: #0052ff; --neon-purple: #8a2be2; --text-main: #1a1a24;
+            --text-muted: #555566; --border-color: rgba(0, 0, 0, 0.1);
+            --input-bg: rgba(255, 255, 255, 0.9); --row-hover: rgba(0, 82, 255, 0.05);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; transition: 0.3s; }
+        body { background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; position: relative; }
+        .grid-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: 40px 40px; background-image: linear-gradient(to right, var(--border-color) 1px, transparent 1px), linear-gradient(to bottom, var(--border-color) 1px, transparent 1px); z-index: -1; }
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background: var(--nav-bg); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-color); z-index: 100; }
+        .nav-logo { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; font-weight: 700; color: var(--text-main); }
+        .nav-logo span { color: var(--neon-blue); }
+        .nav-controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .control-btn { background: transparent; border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 15px; border-radius: 8px; cursor: pointer; font-size: 1rem; display: flex; align-items: center; gap: 8px; font-weight: bold; }
+        .control-btn:hover, .control-btn:focus { border-color: var(--neon-blue); color: var(--neon-blue); outline: none; }
+        
+        .glass-select { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .glass-select option { background: var(--bg-color); color: var(--text-main); }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
-        body::before {
-            content: ''; position: fixed; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle at 50% 50%, rgba(188, 19, 254, 0.03) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 20%, rgba(0, 243, 255, 0.03) 0%, transparent 40%);
-            z-index: -1; pointer-events: none;
+        .main-container { flex: 1; display: flex; justify-content: center; align-items: flex-start; padding: 40px 20px; z-index: 10; }
+        .glass-card { width: 100%; max-width: 800px; background: var(--card-bg); backdrop-filter: blur(16px); border: 1px solid var(--border-color); border-radius: 20px; padding: 40px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
+        .title { text-align: center; font-size: 2rem; margin-bottom: 10px; font-weight: 900; }
+        .subtitle { text-align: center; color: var(--text-muted); margin-bottom: 30px; }
+        .platforms { text-align: center; margin-bottom: 30px; }
+        .platforms i { font-size: 1.5rem; color: var(--text-muted); margin: 0 10px; }
+        .input-group { position: relative; margin-bottom: 20px; }
+        .input-group input { width: 100%; background: var(--input-bg); border: 2px solid var(--border-color); border-radius: 12px; padding: 18px 20px; padding-right: 50px; color: var(--text-main); font-size: 1rem; outline: none; }
+        html[dir="ltr"] .input-group input { padding-right: 20px; padding-left: 50px; }
+        .input-group input:focus { border-color: var(--neon-blue); }
+        .input-group i.link-icon { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); color: var(--neon-blue); font-size: 1.2rem; }
+        html[dir="ltr"] .input-group i.link-icon { right: auto; left: 20px; }
+        .btn-analyze { width: 100%; background: linear-gradient(45deg, #0052ff, #bc13fe); border: none; border-radius: 12px; padding: 16px; color: white; font-size: 1.1rem; font-weight: 700; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .btn-analyze:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(188, 19, 254, 0.4); }
+        .btn-analyze:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        
+        .result-area { display: none; margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border-color); animation: fadeIn 0.5s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .video-preview { display: flex; gap: 20px; margin-bottom: 25px; align-items: flex-start; }
+        .thumb-container { display: flex; flex-direction: column; gap: 10px; width: 220px; }
+        .video-thumb { width: 100%; border-radius: 12px; object-fit: cover; border: 2px solid var(--border-color); background: #111; aspect-ratio: 16/9; }
+        .video-info { flex: 1; width: 100%; }
+        
+        .video-title-input { width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px dashed var(--border-color); color: var(--text-main); font-size: 1.1rem; font-weight: bold; padding: 8px 12px; border-radius: 8px; margin-bottom: 12px; outline: none; transition: 0.3s; font-family: 'Cairo', sans-serif; }
+        .video-title-input:focus { border-color: var(--neon-blue); background: rgba(0, 0, 0, 0.4); }
+        .video-title-input::placeholder { color: var(--text-muted); font-size: 0.9rem; font-weight: normal; }
+        
+        .trim-group { display: flex; gap: 10px; margin-bottom: 12px; align-items: center; }
+        .trim-input { flex: 1; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px; border-radius: 8px; text-align: center; outline: none; }
+        .trim-input:focus { border-color: var(--neon-purple); }
+
+        .video-source { font-size: 0.9rem; color: var(--neon-blue); display: inline-block; padding: 4px 10px; background: rgba(0, 243, 255, 0.1); border-radius: 20px; margin-bottom: 10px; }
+        .qualities-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .qualities-table th { text-align: right; padding: 12px; border-bottom: 2px solid var(--border-color); color: var(--text-muted); font-size: 0.9rem; }
+        html[dir="ltr"] .qualities-table th { text-align: left; }
+        .qualities-table td { padding: 12px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
+        .qualities-table tr:hover { background-color: var(--row-hover); }
+        .q-name { font-weight: bold; display: flex; align-items: center; gap: 8px; direction: ltr; justify-content: flex-end; }
+        html[dir="ltr"] .q-name { justify-content: flex-start; }
+        .q-name i { color: var(--neon-blue); }
+        .q-name.audio i { color: var(--neon-purple); }
+        .q-format { color: var(--text-muted); font-size: 0.85rem; direction: ltr; display: inline-block; }
+        .btn-dl-small { background: rgba(0, 243, 255, 0.1); border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 5px; width: 120px; transition: 0.3s; }
+        .btn-dl-small:hover { background: var(--neon-blue); color: #000; }
+        .btn-dl-small.audio-btn { background: rgba(188, 19, 254, 0.1); border-color: var(--neon-purple); color: var(--neon-purple); }
+        .btn-dl-small.audio-btn:hover { background: var(--neon-purple); color: #fff; }
+        .btn-dl-small:disabled { opacity: 0.7; cursor: not-allowed; background: rgba(0,0,0,0.5) !important; color: var(--text-main) !important; border-color: var(--text-muted) !important; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px; width: 90%; max-width: 500px; padding: 30px; max-height: 80vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 1.5rem; font-weight: bold; }
+        .close-btn { cursor: pointer; color: var(--text-muted); }
+        .close-btn:hover { color: #ff3366; }
+        .history-item { display: flex; gap: 15px; padding: 10px; border-bottom: 1px solid var(--border-color); align-items: center; }
+        .history-item img { width: 80px; border-radius: 8px; }
+        .history-item div { flex: 1; font-size: 0.9rem; font-weight: bold; line-height: 1.4; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+        .history-item a { color: var(--neon-blue); font-size: 1.2rem; }
+
+        .playlist-item { display: flex; gap: 15px; padding: 15px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 15px; flex-wrap: wrap; align-items: center; }
+        .playlist-item img { width: 120px; border-radius: 8px; aspect-ratio: 16/9; object-fit: cover; }
+        .playlist-info { flex: 1; min-width: 200px; }
+        .playlist-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .playlist-select { padding: 8px; border-radius: 8px; background: var(--input-bg); color: var(--text-main); border: 1px solid var(--border-color); outline: none; }
+
+        .status-msg { margin-top: 20px; font-weight: bold; font-size: 0.95rem; display: none; text-align: center; padding: 12px; border-radius: 8px; background: rgba(0,0,0,0.2); }
+        .status-error { color: #ff3366; border: 1px solid rgba(255, 51, 102, 0.3); }
+
+        .vault-card { margin-top: 40px; padding: 25px; background: rgba(20, 20, 35, 0.4); border: 1px dashed var(--neon-purple); border-radius: 16px; text-align: center; backdrop-filter: blur(10px); }
+        .vault-card h3 { color: var(--neon-purple); margin-bottom: 10px; }
+        .vault-card p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px; }
+        .vault-input { width: 100%; max-width: 300px; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--input-bg); color: var(--text-main); text-align: center; font-weight: bold; margin-bottom: 15px; outline: none; }
+        .vault-input:focus { border-color: var(--neon-purple); }
+        .btn-vault { background: linear-gradient(45deg, #bc13fe, #0052ff); border: none; padding: 12px 25px; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; }
+        
+        .progress-container { display: none; margin-top: 20px; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; text-align: center; }
+        .ticket-display { color: var(--neon-blue); font-size: 1.2rem; font-weight: bold; margin-bottom: 10px; letter-spacing: 2px; }
+        .progress-bar-bg { width: 100%; height: 10px; background: rgba(255, 255, 255, 0.1); border-radius: 5px; margin-top: 10px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: var(--neon-blue); width: 0%; transition: 0.3s; }
+
+        @media (max-width: 600px) {
+            .video-preview { flex-direction: column; align-items: center; text-align: center; }
+            .thumb-container { width: 100%; aspect-ratio: 16/9; margin-bottom: 15px; }
+            .qualities-table th { display: none; }
+            .qualities-table td { display: block; text-align: center; padding: 8px; border: none; }
+            .qualities-table tr { border-bottom: 1px solid var(--border-color); padding: 10px 0; display: block; }
+            .q-name { justify-content: center; margin-bottom: 5px; }
+            .btn-dl-small { width: 100%; margin-top: 10px; }
+            .nav-controls { justify-content: center; }
+            .playlist-item { flex-direction: column; }
+            .playlist-item img { width: 100%; }
+            .playlist-actions { width: 100%; justify-content: space-between; }
+            .trim-group { flex-wrap: wrap; }
         }
 
-        nav { background: var(--nav-bg); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; }
-        .brand { display: flex; align-items: center; gap: 10px; }
-        .glow-text { font-family: 'Orbitron', sans-serif; font-size: 24px; font-weight: 700; color: var(--text-main); text-shadow: 0 0 10px rgba(0,243,255,0.3); letter-spacing: 2px; }
-        .lang-switch { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 15px; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 700; transition: 0.3s; }
-        .lang-switch:hover { border-color: var(--neon-blue); box-shadow: 0 0 15px rgba(0,243,255,0.2); }
+.ads-container {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 160px; 
+    height: 600px; 
+    background: var(--card-bg);
+    border: 1px dashed var(--border-color);
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    backdrop-filter: blur(10px);
+    z-index: 50;
+    overflow: hidden;
+}
 
-        .layout { display: flex; max-width: 1400px; margin: 30px auto; padding: 0 20px; gap: 20px; }
-        .sidebar { width: 300px; display: flex; flex-direction: column; gap: 20px; flex-shrink: 0; }
-        .main-content { flex-grow: 1; min-width: 0; }
-        @media (max-width: 992px) { .layout { flex-direction: column; } .sidebar { width: 100%; order: 2; } .main-content { order: 1; } }
+.ads-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 
-        .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 25px; backdrop-filter: blur(10px); margin-bottom: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
-        .card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); }
-        .card-header h3 { font-size: 18px; font-weight: 700; color: var(--neon-blue); }
+.ad-right { right: 20px; }
+.ad-left { left: 20px; }
 
-        .tabs { display: flex; gap: 10px; margin-bottom: 25px; background: rgba(0,0,0,0.3); padding: 5px; border-radius: 12px; }
-        .tab-btn { flex: 1; background: transparent; border: none; padding: 12px; color: var(--text-muted); font-weight: 700; font-size: 15px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
-        .tab-btn.active { background: var(--neon-blue); color: #000; box-shadow: 0 0 15px rgba(0,243,255,0.4); }
-        .tab-content { display: none; animation: fadeIn 0.4s ease; }
-        .tab-content.active { display: block; }
-
-        .input-group { position: relative; margin-bottom: 20px; }
-        .input-group i { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 18px; }
-        html[dir="ltr"] .input-group i { right: auto; left: 15px; }
-        .url-input { width: 100%; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 18px 45px; border-radius: 12px; font-size: 16px; outline: none; transition: 0.3s; }
-        html[dir="ltr"] .url-input { padding: 18px 15px 18px 45px; }
-        .url-input:focus { border-color: var(--neon-purple); box-shadow: 0 0 20px rgba(188,19,254,0.1); }
-
-        .btn-primary { width: 100%; background: linear-gradient(45deg, var(--neon-blue), #0099ff); border: none; padding: 18px; color: #000; font-weight: 900; font-size: 16px; border-radius: 12px; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 10px; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,243,255,0.3); }
-        .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
-
-        .file-upload { border: 2px dashed var(--border-color); padding: 30px; text-align: center; border-radius: 12px; cursor: pointer; transition: 0.3s; margin-bottom: 20px; background: rgba(0,0,0,0.2); }
-        .file-upload:hover { border-color: var(--neon-purple); background: rgba(188,19,254,0.05); }
-        .file-upload i { font-size: 40px; color: var(--neon-purple); margin-bottom: 10px; }
-        #fileInput { display: none; }
-
-        .vault-input { text-align: center; font-family: 'Orbitron', sans-serif; letter-spacing: 3px; font-size: 20px; color: var(--neon-purple); }
-        .vault-input::placeholder { letter-spacing: normal; font-family: 'Cairo', sans-serif; font-size: 15px; }
-
-        .history-list { display: flex; flex-direction: column; gap: 10px; max-height: 400px; overflow-y: auto; padding-right: 5px; }
-        .history-list::-webkit-scrollbar { width: 6px; }
-        .history-list::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
-        .history-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(0,0,0,0.3); border-radius: 10px; border: 1px solid transparent; transition: 0.3s; cursor: pointer; }
-        .history-item:hover { border-color: var(--neon-blue); background: rgba(0,243,255,0.05); }
-        .history-thumb { width: 60px; height: 45px; border-radius: 6px; object-fit: cover; background: #000; }
-        .history-info { flex-grow: 1; overflow: hidden; }
-        .history-title { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
-        .history-meta { font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between; }
-        .history-type { color: var(--neon-purple); font-weight: 700; }
-
-        .ad-space { background: rgba(0,0,0,0.5); border: 1px dashed var(--border-color); height: 250px; border-radius: 12px; display: flex; justify-content: center; align-items: center; color: var(--text-muted); font-size: 14px; text-align: center; margin-bottom: 20px; }
-
-        .result-area { display: none; margin-top: 30px; animation: slideUp 0.5s ease; }
-        .video-profile { display: flex; gap: 20px; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 16px; border: 1px solid var(--border-color); margin-bottom: 20px; align-items: center; }
-        .thumb-wrapper { position: relative; width: 180px; flex-shrink: 0; }
-        .video-thumb { width: 100%; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
-        .video-details { flex-grow: 1; display: flex; flex-direction: column; gap: 10px; }
-        .title-input { background: transparent; border: none; color: var(--text-main); font-size: 18px; font-weight: 700; width: 100%; outline: none; border-bottom: 1px dashed var(--text-muted); padding-bottom: 5px; transition: 0.3s; }
-        .title-input:focus { border-color: var(--neon-blue); color: var(--neon-blue); }
-        .source-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.05); padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; color: var(--text-muted); width: fit-content; }
-        .dl-thumb-btn { display: inline-flex; align-items: center; gap: 5px; color: var(--neon-purple); font-size: 13px; text-decoration: none; margin-top: 5px; transition: 0.3s; }
-        .dl-thumb-btn:hover { text-shadow: 0 0 8px var(--neon-purple); }
-        @media (max-width: 600px) { .video-profile { flex-direction: column; text-align: center; } .thumb-wrapper { width: 100%; max-width: 250px; } .source-badge { margin: 0 auto; } }
-
-        .table-container { overflow-x: auto; background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px solid var(--border-color); }
-        table { width: 100%; border-collapse: collapse; min-width: 500px; }
-        th, td { padding: 15px; text-align: center; border-bottom: 1px solid var(--border-color); }
-        th { font-weight: 700; color: var(--text-muted); font-size: 14px; background: rgba(255,255,255,0.02); }
-        tr:hover td { background: var(--row-hover); }
-        tr:last-child td { border-bottom: none; }
-        .q-badge { font-weight: 900; font-family: 'Orbitron', sans-serif; color: var(--text-main); }
-        .s-badge { color: var(--text-muted); font-size: 13px; }
-        .btn-dl-small { background: rgba(0, 243, 255, 0.1); color: var(--neon-blue); border: 1px solid var(--neon-blue); padding: 8px 20px; border-radius: 8px; cursor: pointer; font-weight: 700; transition: 0.3s; display: inline-flex; align-items: center; gap: 5px; }
-        .btn-dl-small:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 10px rgba(0,243,255,0.4); }
-
-        .cut-controls { display: flex; gap: 10px; margin-bottom: 20px; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color); }
-        .cut-input { flex: 1; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px; border-radius: 8px; text-align: center; outline: none; }
-        .cut-input:focus { border-color: var(--neon-blue); }
-
-        .progress-container { margin-top: 20px; display: none; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); text-align: center; }
-        .progress-bar-bg { width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; margin: 15px 0; }
-        .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--neon-purple), var(--neon-blue)); transition: width 0.3s ease; box-shadow: 0 0 10px var(--neon-blue); }
-        .progress-status { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; }
-        .ticket-box { background: rgba(188,19,254,0.1); border: 1px dashed var(--neon-purple); padding: 10px; border-radius: 8px; margin-top: 15px; font-size: 13px; }
-        .ticket-code { font-family: 'Orbitron', sans-serif; color: var(--neon-purple); font-weight: 900; letter-spacing: 1px; user-select: all; }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        .fa-spinner { animation: spin 1s linear infinite; }
+@media (max-width: 1250px) {
+    .ads-container {
+        display: none;
+    }
+}
     </style>
 </head>
 <body>
 
-    <nav>
-        <div class="brand">
-            <i class="fa-solid fa-bolt" style="color: var(--neon-blue); font-size: 24px;"></i>
-            <h1 class="glow-text">NEXUS<span style="color: var(--neon-purple);">-DL</span></h1>
+    <div class="grid-bg"></div>
+<div class="ads-container ad-right">
+    <div style="padding: 10px;">
+        <i class="fas fa-ad" style="font-size: 2rem; color: var(--neon-blue); margin-bottom: 10px;"></i>
+        <br>مساحة إعلانية<br>(أمازون / تكنولوجيا)
+    </div>
+</div>
+
+<div class="ads-container ad-left">
+    <div style="padding: 10px;">
+        <i class="fas fa-ad" style="font-size: 2rem; color: var(--neon-purple); margin-bottom: 10px;"></i>
+        <br>مساحة إعلانية<br>(أمازون / تكنولوجيا)
+    </div>
+</div>
+
+    <nav class="navbar">
+        <div class="nav-logo">NEXUS<span>-DL</span></div>
+        <div class="nav-controls">
+            <button class="control-btn" id="btnHistory" onclick="toggleHistory()" title="سجل التحميلات">
+                <i class="fas fa-history"></i> <span id="t-history">سجل التحميلات</span>
+            </button>
+
+            <select id="audioQuality" class="control-btn glass-select">
+                <option value="32k">32 kbps</option>
+                <option value="48k">48 kbps</option>
+                <option value="64k">64 kbps</option>
+                <option value="128k" selected>128 kbps</option>
+                <option value="320k">320 kbps</option>
+            </select>
+
+            <input type="file" id="localFileInput" accept="video/*" style="display: none;" onchange="handleLocalConversion(this)">
+            <button class="control-btn" id="convertToggle" onclick="document.getElementById('localFileInput').click()" title="تحويل فيديو لصوت من الجهاز">
+                <i class="fas fa-headphones"></i> <span id="convertText">أوفلاين MP3</span>
+            </button>
+
+            <button class="control-btn" id="langToggle" onclick="toggleLanguage()"><i class="fas fa-globe"></i> <span id="langText">English</span></button>
+            <button class="control-btn" id="themeToggle" onclick="toggleTheme()"><i class="fas fa-moon" id="themeIcon"></i></button>
         </div>
-        <button class="lang-switch" onclick="toggleLanguage()">
-            <i class="fa-solid fa-globe"></i> <span id="langText">English</span>
-        </button>
     </nav>
 
-    <div class="layout">
-        <aside class="sidebar">
-            <div class="ad-space">AD SPACE</div>
-            
-            <div class="card">
-                <div class="card-header">
-                    <i class="fa-solid fa-clock-rotate-left" style="color: var(--neon-purple);"></i>
-                    <h3 id="t-historyTitle">السجل الأخير</h3>
-                </div>
-                <div class="history-list" id="historyList"></div>
+    <div class="modal" id="historyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="t-historyTitle">سجل التحميلات</span>
+                <i class="fas fa-times close-btn" onclick="toggleHistory()"></i>
             </div>
-
-            <div class="ad-space">AD SPACE</div>
-        </aside>
-
-        <main class="main-content">
-            <div class="card">
-                <div class="tabs">
-                    <button class="tab-btn active" onclick="switchTab('Download')" id="t-tabDownload">تحميل ميديا</button>
-                    <button class="tab-btn" onclick="switchTab('Convert')" id="t-tabConvert">محول الصوت</button>
-                    <button class="tab-btn" onclick="switchTab('Vault')" id="t-tabVault">الخزنة السحابية</button>
-                </div>
-
-                <div id="Download" class="tab-content active">
-                    <div class="input-group">
-                        <i class="fa-solid fa-link"></i>
-                        <input type="text" id="videoUrl" class="url-input" placeholder="ضع رابط الفيديو هنا (YouTube, TikTok, X, Insta...)">
-                    </div>
-                    <button class="btn-primary" id="analyzeBtn" onclick="analyzeUrl()">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i> <span id="t-btnAnalyze">تحليل الرابط</span>
-                    </button>
-                    <p id="errorMsg" style="color: #ff4d4d; font-size: 14px; margin-top: 10px; display: none; text-align: center;"></p>
-
-                    <div class="result-area" id="resultArea">
-                        <div class="video-profile">
-                            <div class="thumb-wrapper">
-                                <img src="" alt="Thumbnail" id="videoThumb" class="video-thumb">
-                            </div>
-                            <div class="video-details">
-                                <input type="text" id="videoTitle" class="title-input">
-                                <div class="source-badge">
-                                    <i class="fa-brands fa-youtube" id="sourceIcon"></i> <span id="sourceText">YouTube</span>
-                                </div>
-                                <a href="#" id="downloadThumbBtn" target="_blank" class="dl-thumb-btn">
-                                    <i class="fa-solid fa-image"></i> <span id="t-dlThumb">تحميل الصورة المصغرة</span>
-                                </a>
-                            </div>
-                        </div>
-
-                        <div class="cut-controls">
-                            <input type="text" id="cutStart" class="cut-input" placeholder="من (مثال: 00:00:00)">
-                            <input type="text" id="cutEnd" class="cut-input" placeholder="إلى (مثال: 00:01:30)">
-                        </div>
-
-                        <div class="table-container">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th id="t-thType">النوع</th>
-                                        <th id="t-thQuality">الجودة</th>
-                                        <th id="t-thSize">الحجم</th>
-                                        <th id="t-thAction">إجراء</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="formatsTableBody"></tbody>
-                            </table>
-                        </div>
-
-                        <div class="progress-container" id="progressContainer">
-                            <div class="progress-status">
-                                <span id="progressText" style="color: var(--neon-blue);">جاري التجهيز...</span>
-                                <span id="progressPercent">0%</span>
-                            </div>
-                            <div class="progress-bar-bg">
-                                <div class="progress-bar-fill" id="progressBar"></div>
-                            </div>
-                            <div class="ticket-box">
-                                <span id="t-ticketMsg">رقم التذكرة الخاصة بك:</span> <span class="ticket-code" id="ticketDisplay">---</span><br>
-                                <span style="color: var(--text-muted); font-size: 11px;" id="t-ticketNote">(إذا انقطع الاتصال، استخدم هذا الرقم في قسم الخزنة)</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="Convert" class="tab-content">
-                    <div class="card-header" style="border:none; margin-bottom:0;">
-                        <i class="fa-solid fa-music" style="color: var(--neon-blue);"></i>
-                        <h3 id="t-convertTitle">تحويل لصوت</h3>
-                    </div>
-                    <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;" id="t-convertDesc">حول أي فيديو لـ MP3 مجاناً</p>
-                    
-                    <form id="convertForm">
-                        <label class="file-upload" for="fileInput">
-                            <i class="fa-solid fa-cloud-arrow-up"></i>
-                            <h4 id="t-uploadTitle">اضغط لاختيار فيديو</h4>
-                            <p style="font-size: 12px; color: var(--text-muted); margin-top: 5px;" id="fileNameDisplay">لم يتم اختيار ملف</p>
-                        </label>
-                        <input type="file" id="fileInput" accept="video/*" required>
-                        
-                        <div style="margin-bottom: 20px;">
-                            <label style="font-size: 14px; font-weight: 700; color: var(--text-muted);" id="t-qLabel">اختر دقة الصوت:</label>
-                            <select id="audioQuality" class="url-input" style="padding: 10px; margin-top: 5px;">
-                                <option value="128k">128 kbps (متوسط - أسرع)</option>
-                                <option value="320k">320 kbps (عالي الجودة)</option>
-                            </select>
-                        </div>
-                        
-                        <button type="submit" class="btn-primary" id="convertBtn">
-                            <i class="fa-solid fa-arrows-rotate"></i> <span id="t-btnConvert">بدء التحويل</span>
-                        </button>
-                    </form>
-                    <p id="convertMsg" style="text-align: center; margin-top: 15px; font-size: 14px;"></p>
-                </div>
-
-                <div id="Vault" class="tab-content">
-                    <div class="card-header" style="border:none; margin-bottom:0;">
-                        <i class="fa-solid fa-box-archive" style="color: var(--neon-purple);"></i>
-                        <h3 id="t-vaultTitle">الخزنة السحابية</h3>
-                    </div>
-                    <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;" id="t-vaultDesc">استرجع ملفاتك المحملة في آخر ساعتين باستخدام رقم التذكرة</p>
-                    
-                    <div class="input-group">
-                        <i class="fa-solid fa-key"></i>
-                        <input type="text" id="vaultTicket" class="url-input vault-input" placeholder="Ticket_XXXXXXXXXXXXX">
-                    </div>
-                    <button class="btn-primary" onclick="retrieveVault()" style="background: linear-gradient(45deg, var(--neon-purple), #ff00ff);">
-                        <i class="fa-solid fa-download"></i> <span id="t-btnVault">استرجاع الملف</span>
-                    </button>
-                    <p id="vaultError" style="color: #ff4d4d; font-size: 14px; margin-top: 15px; display: none; text-align: center; font-weight: 700;"></p>
-                </div>
-
-            </div>
-        </main>
+            <div id="historyList"></div>
+        </div>
     </div>
 
-    <div style="text-align: center; margin-top: 30px; padding-bottom: 20px;">
-        <a href="terms.html" id="t-terms" style="color: var(--text-muted); text-decoration: none; font-size: 14px; transition: 0.3s;" onmouseover="this.style.color='var(--neon-blue)'" onmouseout="this.style.color='var(--text-muted)'">شروط الاستخدام وإخلاء المسؤولية</a>
+    <div class="main-container">
+        <div class="glass-card">
+            <h1 class="title" id="t-title">تحميل الفيديوهات</h1>
+            <p class="subtitle" id="t-subtitle">حمل فيديوهاتك المفضلة بسرعة وبأعلى جودة</p>
+            
+            <div class="platforms">
+                <i class="fab fa-youtube"></i> <i class="fab fa-tiktok"></i> <i class="fab fa-instagram"></i> <i class="fab fa-facebook-f"></i> <i class="fa-brands fa-x-twitter"></i>
+            </div>
+
+            <div class="input-group">
+                <i class="fas fa-link link-icon"></i>
+                <input type="url" id="videoUrl" placeholder="الصق الرابط هنا..." autocomplete="off">
+            </div>
+
+            <button class="btn-analyze" id="btnAnalyze" onclick="analyzeUrl()">
+                <i class="fas fa-search"></i> <span id="t-btnAnalyze">تحليل الرابط</span>
+            </button>
+
+            <div class="status-msg status-error" id="errorMsg"></div>
+
+            <div class="result-area" id="resultArea">
+                <div id="singleVideoArea">
+                    <div class="video-preview">
+                        <div class="thumb-container">
+                            <img src="" alt="Thumbnail" class="video-thumb" id="videoThumb">
+                            <a id="downloadThumbBtn" href="#" target="_blank" class="btn-dl-small" style="width: 100%; text-decoration: none;" download="Thumbnail.jpg">
+                                <i class="fas fa-image"></i> <span id="t-dlThumb">تحميل الصورة</span>
+                            </a>
+                        </div>
+                        <div class="video-info">
+                            <input type="text" class="video-title-input" id="videoTitle" placeholder="اسم الفيديو..." title="يمكنك تعديل اسم الملف قبل التحميل">
+                            
+                            <div class="trim-group">
+                                <input type="text" class="trim-input" id="trimStart" placeholder="بداية (مثال: 7)" title="قص من">
+                                <input type="text" class="trim-input" id="trimEnd" placeholder="نهاية (مثال: 12)" title="قص إلى">
+                                <select id="trimUnit" class="trim-input glass-select" style="max-width: 90px; cursor: pointer;">
+                                    <option value="min" id="t-min">دقائق</option>
+                                    <option value="sec" id="t-sec">ثواني</option>
+                                </select>
+                            </div>
+
+                            <div class="video-source" id="videoSource">مصدر الفيديو</div>
+                            
+                            <div id="progressContainer" class="progress-container">
+                                <div id="t-ticketLabel" style="color: var(--text-muted); font-size: 0.9rem;">تذكرتك (انسخها لو هتقفل):</div>
+                                <div id="ticketDisplay" class="ticket-display">--</div>
+                                <div id="progressText" style="font-weight: bold;">جاري التحميل... 0%</div>
+                                <div class="progress-bar-bg">
+                                    <div id="progressFill" class="progress-bar-fill"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <table class="qualities-table" id="downloadTable">
+                        <thead>
+                            <tr>
+                                <th id="th-quality">الجودة / الدقة</th>
+                                <th id="th-format">الحجم</th>
+                                <th id="th-action">إجراء</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+
+                <div id="playlistArea" style="display: none;">
+                    <h3 style="margin-bottom: 20px; color: var(--neon-blue);" id="playlistTitleDisplay"></h3>
+                    <div id="playlistItems"></div>
+                </div>
+            </div>
+
+            <div class="vault-card">
+                <h3 id="t-vaultTitle"><i class="fas fa-lock"></i> خزنة الملفات</h3>
+                <p id="t-vaultDesc">لو قفلت الصفحة بالغلط، اكتب رقم تذكرتك هنا واستلم ملفك الجاهز.</p>
+                <input type="text" id="vaultTicketInput" class="vault-input" placeholder="مثال: Ticket_123456">
+                <br>
+                <button class="btn-vault" id="t-vaultBtn" onclick="restoreFromVault()"><i class="fas fa-box-open"></i> استرجاع الملف</button>
+            </div>
+
+        </div>
     </div>
 
     <script>
-        const API_URL = 'http://localhost:3000'; // غيّر الرابط لو هترفع على استضافة
+        const BASE_SERVER = "https://104d8dc6-282f-410c-937a-f6bf842aec41-00-3ffyh99rbk4kt.worf.replit.dev";
+        const BACKEND_URL = BASE_SERVER + "/api/info"; 
+        const DOWNLOAD_URL = BASE_SERVER + "/api/download"; 
+        const CONVERT_URL = BASE_SERVER + "/api/convert"; 
+        const PROXY_URL = BASE_SERVER + "/api/proxy"; 
+        const VAULT_URL = BASE_SERVER + "/api/vault";
 
         const translations = {
             ar: {
-                tabDownload: "تحميل ميديا", tabConvert: "محول الصوت", tabVault: "الخزنة السحابية",
-                historyTitle: "السجل الأخير",
-                btnAnalyze: "تحليل الرابط", dlThumb: "الصورة المصغرة",
-                thType: "النوع", thQuality: "الجودة", thSize: "الحجم", thAction: "إجراء",
-                ticketMsg: "رقم التذكرة الخاصة بك:", ticketNote: "(إذا انقطع الاتصال، استخدم هذا الرقم في قسم الخزنة)",
-                convertTitle: "تحويل لصوت", convertDesc: "حول أي فيديو لـ MP3 مجاناً",
-                uploadTitle: "اضغط لاختيار فيديو", btnConvert: "بدء التحويل", qLabel: "اختر دقة الصوت:",
-                vaultTitle: "الخزنة السحابية", vaultDesc: "استرجع ملفاتك المحملة في آخر ساعتين باستخدام رقم التذكرة",
-                btnVault: "استرجاع الملف", inputPlaceholder: "ضع رابط الفيديو هنا (YouTube, TikTok, X, Insta...)",
-                cutStartPlaceholder: "من (مثال: 00:00:00)", cutEndPlaceholder: "إلى (مثال: 00:01:30)",
-                msgAnalyzing: "جاري التحليل...", msgError: "حدث خطأ. تأكد من الرابط والمحاولة مجدداً.",
-                msgUploading: "جاري الرفع والتحويل...", msgDone: "تم التحويل بنجاح!", msgDownload: "تحميل",
-                vidReady: "فيديو جاهز للتحميل", noFiles: "لم تختر ملف",
-                vaultWaitMsg: "الملف لم يكتمل بعد! ابقِ هذه الصفحة مفتوحة وسيبدأ التحميل تلقائياً فور انتهائه.",
-                vaultDownMsg: "جاري التحميل الآن...",
-                terms: "شروط الاستخدام وإخلاء المسؤولية",
-                typeAudio: "صوت", typeVideo: "فيديو"
+                langBtn: "English", title: "تحميل الفيديوهات", subtitle: "حمل فيديوهاتك المفضلة بسرعة وبأعلى جودة",
+                placeholder: "الصق الرابط هنا...", btnAnalyze: "تحليل الرابط", analyzing: "جاري فك التشفير...",
+                msgEmpty: "يرجى إدخال الرابط أولاً!", msgError: "عذراً، الرابط غير صالح أو محمي.", 
+                thQuality: "الجودة", thFormat: "الحجم", thAction: "إجراء", dlBtn: "تحميل",
+                sourceYT: "يوتيوب", sourceTK: "تيك توك", sourceIG: "انستجرام", sourceFB: "فيسبوك", sourceX: "إكس (تويتر)", sourceUnknown: "فيديو",
+                convertBtn: "أوفلاين MP3", converting: "جاري التحويل...", dlThumbBtn: "تحميل الصورة",
+                historyTitle: "سجل التحميلات", historyBtn: "السجل", trimStart: "بداية (مثال: 7)", trimEnd: "نهاية (مثال: 12)",
+                playAudioMP3: "🎵 صوت MP3", playVideoHD: "🎬 فيديو عالي الدقة", playVideoSD: "🎬 فيديو جودة عادية", emptyHistory: "لا توجد تحميلات سابقة.",
+                min: "دقائق", sec: "ثواني",
+                vaultTitle: `<i class="fas fa-lock"></i> خزنة الملفات`, vaultDesc: "لو قفلت الصفحة بالغلط، اكتب رقم تذكرتك هنا واستلم ملفك الجاهز.",
+                vaultInput: "مثال: Ticket_123456", vaultBtn: `<i class="fas fa-box-open"></i> استرجاع الملف`,
+                ticketLabel: "تذكرتك (انسخها لو هتقفل):", terms: "شروط الاستخدام وإخلاء المسؤولية",
+                vidTitlePh: "اسم الفيديو...", vidTitleTooltip: "يمكنك تعديل اسم الملف قبل التحميل",
+                trimFrom: "قص من", trimTo: "قص إلى", progressPrep: "جاري التجهيز... ", progressDone: "✅ اكتمل! جاري حفظ الملف...",
+                progressDL: "جاري التحميل... ", noFormats: "لا توجد جودات متاحة", alertVault: "أدخل رقم التذكرة أولاً!",
+                alertConv: "حدث خطأ أثناء التحويل", vidReady: "فيديو جاهز", defaultName: "Nexus_Media"
             },
             en: {
-                tabDownload: "Download Media", tabConvert: "Audio Converter", tabVault: "Cloud Vault",
-                historyTitle: "Recent History",
-                btnAnalyze: "Analyze Link", dlThumb: "Thumbnail",
-                thType: "Type", thQuality: "Quality", thSize: "Size", thAction: "Action",
-                ticketMsg: "Your Ticket ID:", ticketNote: "(If disconnected, use this ID in the Vault)",
-                convertTitle: "Convert to Audio", convertDesc: "Convert any video to MP3 for free",
-                uploadTitle: "Click to select video", btnConvert: "Start Conversion", qLabel: "Select Audio Quality:",
-                vaultTitle: "Cloud Vault", vaultDesc: "Retrieve files downloaded in the last 2 hours using your ticket ID",
-                btnVault: "Retrieve File", inputPlaceholder: "Paste video link here (YouTube, TikTok, X, Insta...)",
-                cutStartPlaceholder: "Start (e.g. 00:00:00)", cutEndPlaceholder: "End (e.g. 00:01:30)",
-                msgAnalyzing: "Analyzing...", msgError: "Error occurred. Check link and try again.",
-                msgUploading: "Uploading and converting...", msgDone: "Conversion successful!", msgDownload: "Download",
-                vidReady: "Video ready to download", noFiles: "No file selected",
-                vaultWaitMsg: "File is not ready yet! Keep this tab open and it will download automatically once finished.",
-                vaultDownMsg: "Downloading now...",
-                terms: "Terms of Use & Disclaimer",
-                typeAudio: "Audio", typeVideo: "Video"
+                langBtn: "عربي", title: "Video Downloader", subtitle: "Download your favorite videos fast and in high quality",
+                placeholder: "Paste URL here...", btnAnalyze: "Analyze", analyzing: "Decrypting...",
+                msgEmpty: "Please enter a valid URL!", msgError: "Sorry, link is invalid or protected.", 
+                thQuality: "Quality", thFormat: "Size", thAction: "Action", dlBtn: "Download",
+                sourceYT: "YouTube", sourceTK: "TikTok", sourceIG: "Instagram", sourceFB: "Facebook", sourceX: "X (Twitter)", sourceUnknown: "Video",
+                convertBtn: "Offline MP3", converting: "Converting...", dlThumbBtn: "Cover Image",
+                historyTitle: "Download History", historyBtn: "History", trimStart: "Start (ex: 7)", trimEnd: "End (ex: 12)",
+                playAudioMP3: "🎵 Audio MP3", playVideoHD: "🎬 Video HD", playVideoSD: "🎬 Video SD", emptyHistory: "No download history found.",
+                min: "Mins", sec: "Secs",
+                vaultTitle: `<i class="fas fa-lock"></i> File Vault`, vaultDesc: "If you closed the page by mistake, enter your ticket ID here to get your file.",
+                vaultInput: "Example: Ticket_123456", vaultBtn: `<i class="fas fa-box-open"></i> Restore File`,
+                ticketLabel: "Your Ticket (copy it if you leave):", terms: "Terms of Use & Disclaimer",
+                vidTitlePh: "Video Name...", vidTitleTooltip: "You can edit the file name before downloading",
+                trimFrom: "Trim From", trimTo: "Trim To", progressPrep: "Preparing... ", progressDone: "✅ Done! Saving file...",
+                progressDL: "Downloading... ", noFormats: "No formats available", alertVault: "Enter ticket ID first!",
+                alertConv: "Error during conversion", vidReady: "Video Ready", defaultName: "Nexus_Media"
             }
         };
 
         let currentLang = localStorage.getItem('nexus_lang') || 'ar';
-        let currentFormats = [];
+        let currentTheme = localStorage.getItem('nexus_theme') || 'dark';
         let currentVideoUrl = "";
+        let currentFormats = []; 
 
-        function updateLanguage() {
-            const root = document.getElementById('html-root');
-            root.lang = currentLang;
-            root.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
-            const t = translations[currentLang];
+        function initApp() { document.documentElement.setAttribute('data-theme', currentTheme); updateThemeIcon(); applyLanguage(currentLang); renderHistory(); }
+        function toggleTheme() { currentTheme = currentTheme === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', currentTheme); localStorage.setItem('nexus_theme', currentTheme); updateThemeIcon(); }
+        function updateThemeIcon() { document.getElementById('themeIcon').className = currentTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun'; }
+        
+        function toggleLanguage() {
+            currentLang = currentLang === 'ar' ? 'en' : 'ar'; localStorage.setItem('nexus_lang', currentLang);
+            applyLanguage(currentLang); renderHistory();
+            if (document.getElementById('resultArea').style.display === 'block') { analyzeUrl(); }
+        }
 
-            document.getElementById('langText').innerText = currentLang === 'ar' ? 'English' : 'عربي';
-            document.getElementById('t-tabDownload').innerText = t.tabDownload;
-            document.getElementById('t-tabConvert').innerText = t.tabConvert;
-            document.getElementById('t-tabVault').innerText = t.tabVault;
-            document.getElementById('t-historyTitle').innerText = t.historyTitle;
-            document.getElementById('t-btnAnalyze').innerText = t.btnAnalyze;
-            document.getElementById('t-dlThumb').innerText = t.dlThumb;
-            document.getElementById('t-thType').innerText = t.thType;
-            document.getElementById('t-thQuality').innerText = t.thQuality;
-            document.getElementById('t-thSize').innerText = t.thSize;
-            document.getElementById('t-thAction').innerText = t.thAction;
-            document.getElementById('t-ticketMsg').innerText = t.ticketMsg;
-            document.getElementById('t-ticketNote').innerText = t.ticketNote;
-            document.getElementById('t-convertTitle').innerText = t.convertTitle;
-            document.getElementById('t-convertDesc').innerText = t.convertDesc;
-            document.getElementById('t-uploadTitle').innerText = t.uploadTitle;
-            document.getElementById('t-btnConvert').innerText = t.btnConvert;
-            document.getElementById('t-qLabel').innerText = t.qLabel;
-            document.getElementById('t-vaultTitle').innerText = t.vaultTitle;
-            document.getElementById('t-vaultDesc').innerText = t.vaultDesc;
-            document.getElementById('t-btnVault').innerText = t.btnVault;
-            document.getElementById('videoUrl').placeholder = t.inputPlaceholder;
-            document.getElementById('cutStart').placeholder = t.cutStartPlaceholder;
-            document.getElementById('cutEnd').placeholder = t.cutEndPlaceholder;
-            document.getElementById('t-terms').innerText = t.terms;
+        function applyLanguage(lang) {
+            document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr'; const t = translations[lang];
+            document.getElementById('langText').innerText = t.langBtn; document.getElementById('t-title').innerText = t.title;
+            document.getElementById('t-subtitle').innerText = t.subtitle; document.getElementById('videoUrl').placeholder = t.placeholder;
+            if (document.getElementById('t-btnAnalyze') && !document.getElementById('btnAnalyze').disabled) document.getElementById('t-btnAnalyze').innerText = t.btnAnalyze;
+            document.getElementById('th-quality').innerText = t.thQuality; document.getElementById('th-format').innerText = t.thFormat;
+            document.getElementById('th-action').innerText = t.thAction; document.getElementById('errorMsg').style.display = 'none';
+            if (document.getElementById('convertText')) document.getElementById('convertText').innerText = t.convertBtn;
+            if (document.getElementById('t-dlThumb')) document.getElementById('t-dlThumb').innerText = t.dlThumbBtn;
+            if (document.getElementById('t-historyTitle')) document.getElementById('t-historyTitle').innerText = t.historyTitle;
+            if (document.getElementById('t-history')) document.getElementById('t-history').innerText = t.historyBtn;
+            if (document.getElementById('t-min')) document.getElementById('t-min').innerText = t.min;
+            if (document.getElementById('t-sec')) document.getElementById('t-sec').innerText = t.sec;
+            document.getElementById('trimStart').placeholder = t.trimStart; document.getElementById('trimEnd').placeholder = t.trimEnd;
+            document.getElementById('trimStart').title = t.trimFrom; document.getElementById('trimEnd').title = t.trimTo;
+            if (document.getElementById('t-vaultTitle')) document.getElementById('t-vaultTitle').innerHTML = t.vaultTitle;
+            if (document.getElementById('t-vaultDesc')) document.getElementById('t-vaultDesc').innerText = t.vaultDesc;
+            if (document.getElementById('vaultTicketInput')) document.getElementById('vaultTicketInput').placeholder = t.vaultInput;
+            if (document.getElementById('t-vaultBtn')) document.getElementById('t-vaultBtn').innerHTML = t.vaultBtn;
+            if (document.getElementById('t-ticketLabel')) document.getElementById('t-ticketLabel').innerText = t.ticketLabel;
+            if (document.getElementById('t-terms')) document.getElementById('t-terms').innerText = t.terms;
+            if (document.getElementById('videoTitle')) {
+                document.getElementById('videoTitle').placeholder = t.vidTitlePh;
+                document.getElementById('videoTitle').title = t.vidTitleTooltip;
+            }
+        }
 
-            const fileInp = document.getElementById('fileInput');
-            if(!fileInp.files.length) { document.getElementById('fileNameDisplay').innerText = t.noFiles; }
-            
-            updateSourceText(currentVideoUrl);
-            buildDynamicTable();
+        document.getElementById('videoUrl').addEventListener('click', async function() {
+            if (this.value === '') {
+                try { const text = await navigator.clipboard.readText(); if (text && (text.includes('http://') || text.includes('https://'))) { this.value = text; } } catch (err) { }
+            }
+        });
+
+        function toggleHistory() {
+            const modal = document.getElementById('historyModal');
+            modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function saveToHistory(title, url, thumb) {
+            let history = JSON.parse(localStorage.getItem('nexus_history')) || [];
+            history = history.filter(item => item.url !== url); 
+            history.unshift({ title, url, thumb });
+            if (history.length > 20) history.pop(); 
+            localStorage.setItem('nexus_history', JSON.stringify(history));
             renderHistory();
         }
 
-        function toggleLanguage() {
-            currentLang = currentLang === 'ar' ? 'en' : 'ar';
-            localStorage.setItem('nexus_lang', currentLang);
-            updateLanguage();
+        function renderHistory() {
+            const t = translations[currentLang]; const list = document.getElementById('historyList');
+            let history = JSON.parse(localStorage.getItem('nexus_history')) || [];
+            if (history.length === 0) { list.innerHTML = `<p style="text-align:center; color:var(--text-muted);">${t.emptyHistory}</p>`; return; }
+            list.innerHTML = '';
+            history.forEach(item => {
+                list.innerHTML += `<div class="history-item"><img src="${item.thumb}" alt="thumb"><div>${item.title}</div><a href="#" onclick="document.getElementById('videoUrl').value='${item.url}'; toggleHistory(); analyzeUrl();"><i class="fas fa-download"></i></a></div>`;
+            });
         }
 
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            event.target.classList.add('active');
+        function formatTrimTime(val, unit) {
+            if (!val) return '';
+            val = val.trim();
+            if (val.includes(':')) return val; 
+            if (!isNaN(val)) {
+                if (unit === 'min') return val + ':00'; 
+                if (unit === 'sec') return val; 
+            }
+            return val;
         }
 
-        document.getElementById('fileInput').addEventListener('change', function(e) {
-            const fileName = e.target.files[0] ? e.target.files[0].name : translations[currentLang].noFiles;
-            document.getElementById('fileNameDisplay').innerText = fileName;
-        });
-
-        document.getElementById('convertForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const file = document.getElementById('fileInput').files[0];
-            const quality = document.getElementById('audioQuality').value;
-            const msgEl = document.getElementById('convertMsg');
-            const btn = document.getElementById('convertBtn');
+        async function handleLocalConversion(input) {
+            if (!input.files || input.files.length === 0) return;
+            const file = input.files[0];
             const t = translations[currentLang];
-
-            if (!file) return;
+            const quality = document.getElementById('audioQuality').value; 
+            
+            const btn = document.getElementById('convertToggle');
+            const originalHtml = btn.innerHTML;
+            
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> <span>${t.converting}</span>`;
+            btn.disabled = true;
 
             const formData = new FormData();
             formData.append('video', file);
-            formData.append('quality', quality);
-
-            btn.disabled = true;
-            btn.innerHTML = `<i class="fa-solid fa-spinner"></i> <span>${t.msgUploading}</span>`;
-            msgEl.innerText = "";
-            msgEl.style.color = "var(--text-main)";
+            formData.append('quality', quality); 
 
             try {
-                const response = await fetch(`${API_URL}/api/convert`, { method: 'POST', body: formData });
-                if (!response.ok) throw new Error("Conversion failed");
-                
+                const response = await fetch(CONVERT_URL, { method: 'POST', body: formData });
+                if (!response.ok) throw new Error('Conversion failed');
+
                 const blob = await response.blob();
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.style.display = 'none';
                 a.href = url;
-                a.download = `Audio_${file.name.split('.')[0]}.mp3`;
+                a.download = file.name.replace(/\.[^/.]+$/, "") + ".mp3";
                 document.body.appendChild(a);
                 a.click();
                 window.URL.revokeObjectURL(url);
                 
-                msgEl.innerText = t.msgDone;
-                msgEl.style.color = "var(--neon-blue)";
-            } catch (err) {
-                msgEl.innerText = t.msgError;
-                msgEl.style.color = "#ff4d4d";
-            } finally {
+                btn.innerHTML = `<i class="fas fa-check"></i>`;
+                setTimeout(() => { btn.innerHTML = originalHtml; btn.disabled = false; }, 2000);
+            } catch (error) {
+                alert(t.alertConv);
+                btn.innerHTML = originalHtml; 
                 btn.disabled = false;
-                btn.innerHTML = `<i class="fa-solid fa-arrows-rotate"></i> <span>${t.btnConvert}</span>`;
-            }
-        });
-
-        function getPlatformInfo(url) {
-            if (!url) return { icon: 'fa-link', name: 'Link', color: '#fff' };
-            if (url.includes('youtube.com') || url.includes('youtu.be')) return { icon: 'fa-youtube', name: 'YouTube', color: '#ff0000' };
-            if (url.includes('tiktok.com')) return { icon: 'fa-tiktok', name: 'TikTok', color: '#00f2fe' };
-            if (url.includes('twitter.com') || url.includes('x.com')) return { icon: 'fa-x-twitter', name: 'X (Twitter)', color: '#ffffff' };
-            if (url.includes('instagram.com')) return { icon: 'fa-instagram', name: 'Instagram', color: '#e1306c' };
-            if (url.includes('facebook.com') || url.includes('fb.watch')) return { icon: 'fa-facebook', name: 'Facebook', color: '#1877f2' };
-            return { icon: 'fa-link', name: 'Link', color: '#fff' };
-        }
-
-        function updateSourceText(url) {
-            if(!url) return;
-            const info = getPlatformInfo(url);
-            const iconEl = document.getElementById('sourceIcon');
-            iconEl.className = `fa-brands ${info.icon}`;
-            iconEl.style.color = info.color;
-            document.getElementById('sourceText').innerText = info.name;
-        }
-
-        function saveToHistory(title, url, type, thumb) {
-            let history = JSON.parse(localStorage.getItem('nexus_history')) || [];
-            let isDuplicate = history.some(item => item.url === url);
-            if (!isDuplicate) {
-                let finalThumb = thumb;
-                // تغليف الصورة بـ البروكسي عشان متختفيش
-                if (thumb && thumb.startsWith('http') && !thumb.includes('/api/proxy')) {
-                    finalThumb = `${API_URL}/api/proxy?url=${encodeURIComponent(thumb)}`;
-                }
-                history.unshift({ title, url, type, thumb: finalThumb, date: new Date().toLocaleString() });
-                if (history.length > 20) history.pop();
-                localStorage.setItem('nexus_history', JSON.stringify(history));
-                renderHistory();
+            } finally {
+                input.value = ''; 
             }
         }
 
-        function renderHistory() {
-            const history = JSON.parse(localStorage.getItem('nexus_history')) || [];
-            const list = document.getElementById('historyList');
+        function fetchMergedDownload(index, btnElement) {
+            const formatInfo = currentFormats[index];
             const t = translations[currentLang];
-            list.innerHTML = '';
+            const originalHtml = btnElement.innerHTML;
+            const customTitle = document.getElementById('videoTitle').value.trim() || t.defaultName;
             
-            if (history.length === 0) {
-                list.innerHTML = `<p style="text-align:center; color: var(--text-muted); font-size:12px; padding: 20px;">لا يوجد سجل بعد / No history yet</p>`;
-                return;
-            }
+            const unit = document.getElementById('trimUnit').value;
+            const trimStart = formatTrimTime(document.getElementById('trimStart').value, unit);
+            const trimEnd = formatTrimTime(document.getElementById('trimEnd').value, unit);
+            
+            const clientId = Date.now().toString();
+            const ticketId = 'Ticket_' + Date.now(); 
 
-            history.forEach(item => {
-                const info = getPlatformInfo(item.url);
-                const displayType = item.type === 'audio' ? t.typeAudio : (item.type === 'video' ? t.typeVideo : item.type);
-                
-                const el = document.createElement('div');
-                el.className = 'history-item';
-                el.onclick = () => { document.getElementById('videoUrl').value = item.url; analyzeUrl(); };
-                el.innerHTML = `
-                    <img src="${item.thumb || 'https://via.placeholder.com/60x45?text=No+Img'}" class="history-thumb" onerror="this.src='https://via.placeholder.com/60x45?text=Img+Error'">
-                    <div class="history-info">
-                        <div class="history-title">${item.title || 'Unknown Title'}</div>
-                        <div class="history-meta">
-                            <span><i class="fa-brands ${info.icon}" style="color:${info.color}"></i> ${info.name}</span>
-                            <span class="history-type">${displayType}</span>
-                        </div>
-                    </div>
-                `;
-                list.appendChild(el);
-            });
+            saveToHistory(customTitle, currentVideoUrl, document.getElementById('videoThumb').src);
+
+            btnElement.disabled = true;
+            btnElement.innerHTML = `<i class="fas fa-spinner fa-spin"></i> 0%`;
+
+            document.getElementById('progressContainer').style.display = 'block';
+            document.getElementById('ticketDisplay').innerText = ticketId;
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('progressText').innerText = t.progressPrep + '0%';
+
+            const evtSource = new EventSource(`${BACKEND_URL.replace('/info', '/progress')}?id=${clientId}`);
+            evtSource.onmessage = function(e) {
+                if (e.data === 'DONE') {
+                    btnElement.innerHTML = `<i class="fas fa-check"></i>`;
+                    btnElement.disabled = false;
+                    document.getElementById('progressFill').style.width = '100%';
+                    document.getElementById('progressText').innerText = t.progressDone;
+                    evtSource.close();
+                    setTimeout(() => { btnElement.innerHTML = originalHtml; }, 3000);
+                } else {
+                    const percent = e.data;
+                    btnElement.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${percent}%`;
+                    document.getElementById('progressFill').style.width = `${percent}%`;
+                    document.getElementById('progressText').innerText = t.progressDL + percent + '%';
+                }
+            };
+            evtSource.onerror = function() { evtSource.close(); };
+            
+            let dlUrl = `${DOWNLOAD_URL}?url=${encodeURIComponent(currentVideoUrl)}&format_id=${formatInfo.format_id || formatInfo.id}&type=${formatInfo.type}&needsMerge=${formatInfo.needsMerge}&customName=${encodeURIComponent(customTitle)}&clientId=${clientId}&ticketId=${ticketId}`;
+            if(trimStart) dlUrl += `&trimStart=${encodeURIComponent(trimStart)}`;
+            if(trimEnd) dlUrl += `&trimEnd=${encodeURIComponent(trimEnd)}`;
+            
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = dlUrl;
+            document.body.appendChild(iframe);
+        }
+
+        function restoreFromVault() {
+            const ticketInput = document.getElementById('vaultTicketInput').value.trim();
+            const t = translations[currentLang];
+            if (!ticketInput) return alert(t.alertVault);
+            
+            window.open(`${VAULT_URL}?ticketId=${ticketInput}`, '_blank');
+        }
+
+        function downloadPlaylistItem(btnElement, url, inputId, selectId, clientId) {
+            const t = translations[currentLang];
+            const customTitle = document.getElementById(inputId).value.trim() || t.defaultName;
+            const formatVal = document.getElementById(selectId).value; 
+            const isAudio = formatVal.includes('audio') && !formatVal.includes('video');
+            const type = isAudio ? 'audio' : 'video';
+            const needsMerge = isAudio ? 'false' : 'true';
+            const originalHtml = btnElement.innerHTML;
+
+            btnElement.disabled = true;
+            btnElement.innerHTML = `<i class="fas fa-spinner fa-spin"></i> 0%`;
+
+            const evtSource = new EventSource(`${BACKEND_URL.replace('/info', '/progress')}?id=${clientId}`);
+            evtSource.onmessage = function(e) {
+                if (e.data === 'DONE') {
+                    btnElement.innerHTML = `<i class="fas fa-check"></i>`;
+                    btnElement.disabled = false;
+                    evtSource.close();
+                    setTimeout(() => { btnElement.innerHTML = originalHtml; }, 3000);
+                } else {
+                    btnElement.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${e.data}%`;
+                }
+            };
+            evtSource.onerror = function() { evtSource.close(); };
+
+            const ticketId = 'Ticket_' + Date.now();
+            let dlUrl = `${DOWNLOAD_URL}?url=${encodeURIComponent(url)}&format_id=${encodeURIComponent(formatVal)}&type=${type}&needsMerge=${needsMerge}&customName=${encodeURIComponent(customTitle)}&clientId=${clientId}&ticketId=${ticketId}`;
+            
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = dlUrl;
+            document.body.appendChild(iframe);
         }
 
         function buildDynamicTable() {
-            const tbody = document.getElementById('formatsTableBody');
+            const tbody = document.getElementById('tableBody'); 
+            const t = translations[currentLang]; 
             tbody.innerHTML = '';
-            const t = translations[currentLang];
-
-            if(!currentFormats || currentFormats.length === 0) return;
-
-            currentFormats.forEach(format => {
-                const tr = document.createElement('tr');
-                const typeIcon = format.type === 'audio' ? '<i class="fa-solid fa-music" style="color:var(--neon-purple);"></i>' : '<i class="fa-solid fa-video" style="color:var(--neon-blue);"></i>';
-                const typeText = format.type === 'audio' ? t.typeAudio : t.typeVideo;
-                const cleanQuality = format.quality.replace(/صوت|فيديو|Audio|Video/g, '').trim();
-
-                tr.innerHTML = `
-                    <td>${typeIcon} <span style="font-size:13px;">${typeText}</span></td>
-                    <td class="q-badge">${cleanQuality}</td>
-                    <td class="s-badge">${format.size}</td>
-                    <td>
-                        <button class="btn-dl-small" onclick="startDownload('${format.format_id}', '${format.type}', '${format.needsMerge}')">
-                            <i class="fa-solid fa-download"></i> ${t.msgDownload}
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function generateClientId() {
-            return Math.random().toString(36).substring(2, 15);
-        }
-
-        async function startDownload(formatId, type, needsMerge) {
-            const t = translations[currentLang];
-            const customTitle = document.getElementById('videoTitle').value.trim();
-            const trimStart = document.getElementById('cutStart').value.trim();
-            const trimEnd = document.getElementById('cutEnd').value.trim();
-            const clientId = generateClientId();
-            const ticketId = `Ticket_${Date.now()}`;
             
-            const progContainer = document.getElementById('progressContainer');
-            const progBar = document.getElementById('progressBar');
-            const progText = document.getElementById('progressText');
-            const progPercent = document.getElementById('progressPercent');
-            const ticketDisplay = document.getElementById('ticketDisplay');
-
-            progContainer.style.display = 'block';
-            progBar.style.width = '0%';
-            progPercent.innerText = '0%';
-            progText.innerText = currentLang === 'ar' ? 'جاري التحميل...' : 'Downloading...';
-            ticketDisplay.innerText = ticketId;
-
-            let query = `url=${encodeURIComponent(currentVideoUrl)}&format_id=${formatId}&type=${type}&needsMerge=${needsMerge}&clientId=${clientId}&ticketId=${ticketId}`;
-            if (customTitle) query += `&customName=${encodeURIComponent(customTitle)}`;
-            if (trimStart && trimEnd) query += `&trimStart=${encodeURIComponent(trimStart)}&trimEnd=${encodeURIComponent(trimEnd)}`;
-
-            const thumbUrl = document.getElementById('videoThumb').src;
-            saveToHistory(customTitle || t.vidReady, currentVideoUrl, type, thumbUrl);
-
-            const eventSource = new EventSource(`${API_URL}/api/progress?id=${clientId}`);
-            eventSource.onmessage = function(event) {
-                if (event.data === 'DONE') {
-                    progBar.style.width = '100%';
-                    progPercent.innerText = '100%';
-                    progText.innerText = currentLang === 'ar' ? 'اكتمل التحميل!' : 'Download Complete!';
-                    progText.style.color = '#00ff00';
-                    eventSource.close();
-                } else {
-                    progBar.style.width = `${event.data}%`;
-                    progPercent.innerText = `${event.data}%`;
-                }
-            };
-
-            window.location.href = `${API_URL}/api/download?${query}`;
-        }
-
-        let vaultInterval = null;
-        async function retrieveVault() {
-            const tId = document.getElementById('vaultTicket').value.trim();
-            const errorMsg = document.getElementById('vaultError');
-            const t = translations[currentLang];
-
-            if (!tId) {
-                errorMsg.style.color = '#ff4d4d';
-                errorMsg.innerText = currentLang === 'en' ? "Please enter a valid ticket number." : "الرجاء إدخال رقم تذكرة صحيح.";
-                errorMsg.style.display = 'block';
+            if (!currentFormats || currentFormats.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;">${t.noFormats}</td></tr>`;
                 return;
             }
 
-            if (vaultInterval) clearInterval(vaultInterval);
-            errorMsg.style.display = 'none';
+            currentFormats.forEach((f, index) => {
+                const isAudio = f.type === 'audio';
+                const iconClass = isAudio ? 'fas fa-music' : 'fas fa-video';
+                const nameClass = isAudio ? 'q-name audio' : 'q-name';
+                const btnClass = isAudio ? 'btn-dl-small audio-btn' : 'btn-dl-small video-btn';
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td><div class="${nameClass}"><i class="${iconClass}"></i> ${f.quality}</div></td>
+                        <td><span class="q-format">${f.size}</span></td>
+                        <td>
+                            <button class="${btnClass}" onclick="fetchMergedDownload(${index}, this)">
+                                <i class="fas fa-download"></i> <span class="t-dlBtnText">${t.dlBtn}</span>
+                            </button>
+                        </td>
+                    </tr>`;
+            });
+        }
 
-            try {
-                const res = await fetch(`${API_URL}/api/vault/status?ticketId=${encodeURIComponent(tId)}`);
-                const data = await res.json();
+        function buildPlaylistUI(entries, title) {
+            const t = translations[currentLang];
+            const container = document.getElementById('playlistItems');
+            document.getElementById('playlistTitleDisplay').innerText = title;
+            container.innerHTML = '';
 
-                if (data.ready) {
-                    errorMsg.style.color = 'var(--neon-blue)';
-                    errorMsg.innerText = t.vaultDownMsg;
-                    errorMsg.style.display = 'block';
-                    window.location.href = `${API_URL}/api/vault?ticketId=${encodeURIComponent(tId)}`;
-                } else {
-                    errorMsg.style.color = '#ffaa00';
-                    errorMsg.innerText = t.vaultWaitMsg;
-                    errorMsg.style.display = 'block';
+            entries.forEach((e, idx) => {
+                const inputId = `pl_title_${idx}`;
+                const selectId = `pl_select_${idx}`;
+                const clientId = `pl_client_${Date.now()}_${idx}`;
+                const fallbackImg = "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=500&auto=format&fit=crop";
+                const imgUrl = e.thumbnail ? `${PROXY_URL}?url=${encodeURIComponent(e.thumbnail)}` : fallbackImg;
 
-                    vaultInterval = setInterval(async () => {
-                        try {
-                            const pollRes = await fetch(`${API_URL}/api/vault/status?ticketId=${encodeURIComponent(tId)}`);
-                            const pollData = await pollRes.json();
-                            if (pollData.ready) {
-                                clearInterval(vaultInterval);
-                                errorMsg.style.color = 'var(--neon-blue)';
-                                errorMsg.innerText = t.vaultDownMsg;
-                                window.location.href = `${API_URL}/api/vault?ticketId=${encodeURIComponent(tId)}`;
-                            }
-                        } catch (e) { console.error(e); }
-                    }, 5000);
-                }
-            } catch (err) {
-                errorMsg.style.color = '#ff4d4d';
-                errorMsg.innerText = t.msgError;
-                errorMsg.style.display = 'block';
-            }
+                container.innerHTML += `
+                    <div class="playlist-item">
+                        <img src="${imgUrl}" onerror="this.src='${fallbackImg}'">
+                        <div class="playlist-info">
+                            <input type="text" class="video-title-input" id="${inputId}" value="${e.title}">
+                        </div>
+                        <div class="playlist-actions">
+                            <select id="${selectId}" class="playlist-select">
+                                <option value="bestaudio/best" selected>${t.playAudioMP3}</option>
+                                <option value="bestvideo[height<=1080]+bestaudio/best">${t.playVideoHD}</option>
+                                <option value="bestvideo[height<=480]+bestaudio/best">${t.playVideoSD}</option>
+                            </select>
+                            <button class="btn-dl-small" onclick="downloadPlaylistItem(this, '${e.url}', '${inputId}', '${selectId}', '${clientId}')">
+                                <i class="fas fa-download"></i> ${t.dlBtn}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function updateSourceText(url) {
+            const t = translations[currentLang]; let sourceName = t.sourceUnknown;
+            if (url.includes('youtu')) sourceName = t.sourceYT; else if (url.includes('tiktok')) sourceName = t.sourceTK;
+            else if (url.includes('instagram')) sourceName = t.sourceIG; else if (url.includes('facebook') || url.includes('fb')) sourceName = t.sourceFB;
+            else if (url.includes('x.com') || url.includes('twitter')) sourceName = t.sourceX;
+            document.getElementById('videoSource').innerHTML = `<i class="fas fa-check-circle"></i> ` + sourceName;
         }
 
         async function analyzeUrl() {
-            const urlInput = document.getElementById('videoUrl').value.trim();
-            const analyzeBtn = document.getElementById('analyzeBtn');
-            const errorMsg = document.getElementById('errorMsg');
-            const resultArea = document.getElementById('resultArea');
+            const urlInput = document.getElementById('videoUrl').value.trim(); 
             const t = translations[currentLang];
+            const errorMsg = document.getElementById('errorMsg');
+            const analyzeBtn = document.getElementById('btnAnalyze');
+            const resultArea = document.getElementById('resultArea');
+            const singleVideoArea = document.getElementById('singleVideoArea');
+            const playlistArea = document.getElementById('playlistArea');
 
-            if (!urlInput) return;
-            currentVideoUrl = urlInput;
+            document.getElementById('progressContainer').style.display = 'none';
 
+            if (!urlInput || !urlInput.includes('http')) {
+                errorMsg.innerText = t.msgEmpty; errorMsg.style.display = 'block'; return;
+            }
+            
             errorMsg.style.display = 'none';
             resultArea.style.display = 'none';
-            document.getElementById('progressContainer').style.display = 'none';
-            document.getElementById('formatsTableBody').innerHTML = '';
-
+            currentVideoUrl = urlInput; 
+            
             const originalBtnHtml = analyzeBtn.innerHTML;
             analyzeBtn.disabled = true;
-            analyzeBtn.innerHTML = `<i class="fa-solid fa-spinner"></i> <span>${t.msgAnalyzing}</span>`;
+            analyzeBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> <span>${t.analyzing}</span>`;
 
             try {
-                const response = await fetch(`${API_URL}/api/info`, {
+                const response = await fetch(BACKEND_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ url: currentVideoUrl, lang: currentLang })
+                    body: JSON.stringify({ url: currentVideoUrl, lang: currentLang }) 
                 });
-
+                
                 const data = await response.json();
-
+                
                 if (data.success) {
                     if (data.isPlaylist) {
-                        alert(currentLang === 'en' ? "Playlists are not fully supported yet in UI, first video will be processed." : "قوائم التشغيل غير مدعومة بالكامل في الواجهة، سيتم معالجة الفيديو الأول.");
+                        singleVideoArea.style.display = 'none';
+                        playlistArea.style.display = 'block';
+                        buildPlaylistUI(data.entries, data.title);
                     } else {
+                        playlistArea.style.display = 'none';
+                        singleVideoArea.style.display = 'block';
+
+                        const fallbackImage = "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=500&auto=format&fit=crop";
+                        const finalImgSrc = data.thumbnail ? `${PROXY_URL}?url=${encodeURIComponent(data.thumbnail)}` : fallbackImage;
+                        
                         const thumbImg = document.getElementById('videoThumb');
                         const downloadThumbBtn = document.getElementById('downloadThumbBtn');
-                        const fallbackImage = 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=500&auto=format&fit=crop';
-                        
-                        let finalImgSrc = fallbackImage;
-                        if (data.thumbnail) {
-                            finalImgSrc = data.thumbnail.startsWith('http') && !data.thumbnail.includes('/api/proxy') 
-                                        ? `${API_URL}/api/proxy?url=${encodeURIComponent(data.thumbnail)}` 
-                                        : data.thumbnail;
-                        }
                         
                         thumbImg.src = finalImgSrc;
                         downloadThumbBtn.href = finalImgSrc; 
@@ -682,11 +710,10 @@
             if (e.key === 'Enter') analyzeUrl();
         });
 
-        function initApp() {
-            updateLanguage();
-        }
-
         initApp();
     </script>
+<div style="text-align: center; margin-top: 30px; padding-bottom: 20px;">
+    <a href="terms.html" id="t-terms" style="color: var(--text-muted); text-decoration: none; font-size: 14px; transition: 0.3s;" onmouseover="this.style.color='var(--neon-blue)'" onmouseout="this.style.color='var(--text-muted)'">شروط الاستخدام وإخلاء المسؤولية</a>
+</div>
 </body>
 </html>
