@@ -102,7 +102,6 @@
         .status-msg { margin-top: 20px; font-weight: bold; font-size: 0.95rem; display: none; text-align: center; padding: 12px; border-radius: 8px; background: rgba(0,0,0,0.2); }
         .status-error { color: #ff3366; border: 1px solid rgba(255, 51, 102, 0.3); }
 
-        /* 🔥 أستايلات الخزنة وشريط التحميل الجديدة المتوافقة مع الموقع 🔥 */
         .vault-card { margin-top: 40px; padding: 25px; background: rgba(20, 20, 35, 0.4); border: 1px dashed var(--neon-purple); border-radius: 16px; text-align: center; backdrop-filter: blur(10px); }
         .vault-card h3 { color: var(--neon-purple); margin-bottom: 10px; }
         .vault-card p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px; }
@@ -129,13 +128,13 @@
             .playlist-actions { width: 100%; justify-content: space-between; }
             .trim-group { flex-wrap: wrap; }
         }
-/* ================== إعلانات الجوانب المحترمة ================== */
+
 .ads-container {
     position: fixed;
     top: 50%;
     transform: translateY(-50%);
-    width: 160px; /* العرض القياسي لإعلانات السكاي سكريبر */
-    height: 600px; /* الطول القياسي */
+    width: 160px; 
+    height: 600px; 
     background: var(--card-bg);
     border: 1px dashed var(--border-color);
     border-radius: 12px;
@@ -156,11 +155,9 @@
     object-fit: cover;
 }
 
-/* تحديد مكان الإعلان اليمين والشمال */
 .ad-right { right: 20px; }
 .ad-left { left: 20px; }
 
-/* إخفاء الإعلانات الجانبية في الموبايل والشاشات الصغيرة عشان متبوظش الموقع */
 @media (max-width: 1250px) {
     .ads-container {
         display: none;
@@ -255,7 +252,7 @@
                             <div class="trim-group">
                                 <input type="text" class="trim-input" id="trimStart" placeholder="بداية (مثال: 7)" title="قص من">
                                 <input type="text" class="trim-input" id="trimEnd" placeholder="نهاية (مثال: 12)" title="قص إلى">
-                                <select id="trimUnit" class="trim-input" style="max-width: 90px; cursor: pointer;">
+                                <select id="trimUnit" class="trim-input glass-select" style="max-width: 90px; cursor: pointer;">
                                     <option value="min" id="t-min">دقائق</option>
                                     <option value="sec" id="t-sec">ثواني</option>
                                 </select>
@@ -264,7 +261,7 @@
                             <div class="video-source" id="videoSource">مصدر الفيديو</div>
                             
                             <div id="progressContainer" class="progress-container">
-                                <div style="color: var(--text-muted); font-size: 0.9rem;">تذكرتك (انسخها لو هتقفل):</div>
+                                <div id="t-ticketLabel" style="color: var(--text-muted); font-size: 0.9rem;">تذكرتك (انسخها لو هتقفل):</div>
                                 <div id="ticketDisplay" class="ticket-display">--</div>
                                 <div id="progressText" style="font-weight: bold;">جاري التحميل... 0%</div>
                                 <div class="progress-bar-bg">
@@ -293,22 +290,23 @@
             </div>
 
             <div class="vault-card">
-                <h3><i class="fas fa-lock"></i> خزنة الملفات</h3>
-                <p>لو قفلت الصفحة بالغلط، اكتب رقم تذكرتك هنا واستلم ملفك الجاهز.</p>
+                <h3 id="t-vaultTitle"><i class="fas fa-lock"></i> خزنة الملفات</h3>
+                <p id="t-vaultDesc">لو قفلت الصفحة بالغلط، اكتب رقم تذكرتك هنا واستلم ملفك الجاهز.</p>
                 <input type="text" id="vaultTicketInput" class="vault-input" placeholder="مثال: Ticket_123456">
                 <br>
-                <button class="btn-vault" onclick="restoreFromVault()"><i class="fas fa-box-open"></i> استرجاع الملف</button>
+                <button class="btn-vault" id="t-vaultBtn" onclick="restoreFromVault()"><i class="fas fa-box-open"></i> استرجاع الملف</button>
             </div>
 
         </div>
     </div>
 
     <script>
-        const BACKEND_URL = "http://localhost:3000/api/info"; 
-        const DOWNLOAD_URL = "http://localhost:3000/api/download"; 
-        const CONVERT_URL = "http://localhost:3000/api/convert"; 
-        const PROXY_URL = "http://localhost:3000/api/proxy"; 
-        const VAULT_URL = "http://localhost:3000/api/vault"; // مسار الخزنة
+        const BASE_SERVER = "https://104d8dc6-282f-410c-937a-f6bf842aec41-00-3ffyh99rbk4kt.worf.replit.dev";
+        const BACKEND_URL = BASE_SERVER + "/api/info"; 
+        const DOWNLOAD_URL = BASE_SERVER + "/api/download"; 
+        const CONVERT_URL = BASE_SERVER + "/api/convert"; 
+        const PROXY_URL = BASE_SERVER + "/api/proxy"; 
+        const VAULT_URL = BASE_SERVER + "/api/vault"; 
 
         const translations = {
             ar: {
@@ -320,7 +318,14 @@
                 convertBtn: "أوفلاين MP3", converting: "جاري التحويل...", dlThumbBtn: "تحميل الصورة",
                 historyTitle: "سجل التحميلات", historyBtn: "السجل", trimStart: "بداية (مثال: 7)", trimEnd: "نهاية (مثال: 12)",
                 playAudioMP3: "🎵 صوت MP3", playVideoHD: "🎬 فيديو عالي الدقة", playVideoSD: "🎬 فيديو جودة عادية", emptyHistory: "لا توجد تحميلات سابقة.",
-                min: "دقائق", sec: "ثواني"
+                min: "دقائق", sec: "ثواني",
+                vaultTitle: `<i class="fas fa-lock"></i> خزنة الملفات`, vaultDesc: "لو قفلت الصفحة بالغلط، اكتب رقم تذكرتك هنا واستلم ملفك الجاهز.",
+                vaultInput: "مثال: Ticket_123456", vaultBtn: `<i class="fas fa-box-open"></i> استرجاع الملف`,
+                ticketLabel: "تذكرتك (انسخها لو هتقفل):", terms: "شروط الاستخدام وإخلاء المسؤولية",
+                vidTitlePh: "اسم الفيديو...", vidTitleTooltip: "يمكنك تعديل اسم الملف قبل التحميل",
+                trimFrom: "قص من", trimTo: "قص إلى", progressPrep: "جاري التجهيز... ", progressDone: "✅ اكتمل! جاري حفظ الملف...",
+                progressDL: "جاري التحميل... ", noFormats: "لا توجد جودات متاحة", alertVault: "أدخل رقم التذكرة أولاً!",
+                alertConv: "حدث خطأ أثناء التحويل", vidReady: "فيديو جاهز", defaultName: "Nexus_Media"
             },
             en: {
                 langBtn: "عربي", title: "Video Downloader", subtitle: "Download your favorite videos fast and in high quality",
@@ -331,7 +336,14 @@
                 convertBtn: "Offline MP3", converting: "Converting...", dlThumbBtn: "Cover Image",
                 historyTitle: "Download History", historyBtn: "History", trimStart: "Start (ex: 7)", trimEnd: "End (ex: 12)",
                 playAudioMP3: "🎵 Audio MP3", playVideoHD: "🎬 Video HD", playVideoSD: "🎬 Video SD", emptyHistory: "No download history found.",
-                min: "Mins", sec: "Secs"
+                min: "Mins", sec: "Secs",
+                vaultTitle: `<i class="fas fa-lock"></i> File Vault`, vaultDesc: "If you closed the page by mistake, enter your ticket ID here to get your file.",
+                vaultInput: "Example: Ticket_123456", vaultBtn: `<i class="fas fa-box-open"></i> Restore File`,
+                ticketLabel: "Your Ticket (copy it if you leave):", terms: "Terms of Use & Disclaimer",
+                vidTitlePh: "Video Name...", vidTitleTooltip: "You can edit the file name before downloading",
+                trimFrom: "Trim From", trimTo: "Trim To", progressPrep: "Preparing... ", progressDone: "✅ Done! Saving file...",
+                progressDL: "Downloading... ", noFormats: "No formats available", alertVault: "Enter ticket ID first!",
+                alertConv: "Error during conversion", vidReady: "Video Ready", defaultName: "Nexus_Media"
             }
         };
 
@@ -364,6 +376,17 @@
             if (document.getElementById('t-min')) document.getElementById('t-min').innerText = t.min;
             if (document.getElementById('t-sec')) document.getElementById('t-sec').innerText = t.sec;
             document.getElementById('trimStart').placeholder = t.trimStart; document.getElementById('trimEnd').placeholder = t.trimEnd;
+            document.getElementById('trimStart').title = t.trimFrom; document.getElementById('trimEnd').title = t.trimTo;
+            if (document.getElementById('t-vaultTitle')) document.getElementById('t-vaultTitle').innerHTML = t.vaultTitle;
+            if (document.getElementById('t-vaultDesc')) document.getElementById('t-vaultDesc').innerText = t.vaultDesc;
+            if (document.getElementById('vaultTicketInput')) document.getElementById('vaultTicketInput').placeholder = t.vaultInput;
+            if (document.getElementById('t-vaultBtn')) document.getElementById('t-vaultBtn').innerHTML = t.vaultBtn;
+            if (document.getElementById('t-ticketLabel')) document.getElementById('t-ticketLabel').innerText = t.ticketLabel;
+            if (document.getElementById('t-terms')) document.getElementById('t-terms').innerText = t.terms;
+            if (document.getElementById('videoTitle')) {
+                document.getElementById('videoTitle').placeholder = t.vidTitlePh;
+                document.getElementById('videoTitle').title = t.vidTitleTooltip;
+            }
         }
 
         document.getElementById('videoUrl').addEventListener('click', async function() {
@@ -440,7 +463,7 @@
                 btn.innerHTML = `<i class="fas fa-check"></i>`;
                 setTimeout(() => { btn.innerHTML = originalHtml; btn.disabled = false; }, 2000);
             } catch (error) {
-                alert(currentLang === 'ar' ? 'حدث خطأ أثناء التحويل' : 'Error during conversion');
+                alert(t.alertConv);
                 btn.innerHTML = originalHtml; 
                 btn.disabled = false;
             } finally {
@@ -448,29 +471,28 @@
             }
         }
 
-        // 🔥 الدالة المعدلة لدعم التذاكر وشريط التحميل 🔥
         function fetchMergedDownload(index, btnElement) {
             const formatInfo = currentFormats[index];
+            const t = translations[currentLang];
             const originalHtml = btnElement.innerHTML;
-            const customTitle = document.getElementById('videoTitle').value.trim() || 'Nexus_Media';
+            const customTitle = document.getElementById('videoTitle').value.trim() || t.defaultName;
             
             const unit = document.getElementById('trimUnit').value;
             const trimStart = formatTrimTime(document.getElementById('trimStart').value, unit);
             const trimEnd = formatTrimTime(document.getElementById('trimEnd').value, unit);
             
             const clientId = Date.now().toString();
-            const ticketId = 'Ticket_' + Date.now(); // توليد رقم التذكرة
+            const ticketId = 'Ticket_' + Date.now(); 
 
             saveToHistory(customTitle, currentVideoUrl, document.getElementById('videoThumb').src);
 
             btnElement.disabled = true;
             btnElement.innerHTML = `<i class="fas fa-spinner fa-spin"></i> 0%`;
 
-            // إظهار منطقة التحميل الخاصة بالتذكرة
             document.getElementById('progressContainer').style.display = 'block';
             document.getElementById('ticketDisplay').innerText = ticketId;
             document.getElementById('progressFill').style.width = '0%';
-            document.getElementById('progressText').innerText = 'جاري التجهيز... 0%';
+            document.getElementById('progressText').innerText = t.progressPrep + '0%';
 
             const evtSource = new EventSource(`${BACKEND_URL.replace('/info', '/progress')}?id=${clientId}`);
             evtSource.onmessage = function(e) {
@@ -478,14 +500,14 @@
                     btnElement.innerHTML = `<i class="fas fa-check"></i>`;
                     btnElement.disabled = false;
                     document.getElementById('progressFill').style.width = '100%';
-                    document.getElementById('progressText').innerText = '✅ اكتمل! جاري حفظ الملف...';
+                    document.getElementById('progressText').innerText = t.progressDone;
                     evtSource.close();
                     setTimeout(() => { btnElement.innerHTML = originalHtml; }, 3000);
                 } else {
                     const percent = e.data;
                     btnElement.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${percent}%`;
                     document.getElementById('progressFill').style.width = `${percent}%`;
-                    document.getElementById('progressText').innerText = `جاري التحميل... ${percent}%`;
+                    document.getElementById('progressText').innerText = t.progressDL + percent + '%';
                 }
             };
             evtSource.onerror = function() { evtSource.close(); };
@@ -500,16 +522,17 @@
             document.body.appendChild(iframe);
         }
 
-        // 🔥 دالة استرجاع الملف من الخزنة 🔥
         function restoreFromVault() {
             const ticketInput = document.getElementById('vaultTicketInput').value.trim();
-            if (!ticketInput) return alert(currentLang === 'ar' ? 'أدخل رقم التذكرة أولاً!' : 'Enter ticket ID first!');
+            const t = translations[currentLang];
+            if (!ticketInput) return alert(t.alertVault);
             
             window.open(`${VAULT_URL}?ticketId=${ticketInput}`, '_blank');
         }
 
         function downloadPlaylistItem(btnElement, url, inputId, selectId, clientId) {
-            const customTitle = document.getElementById(inputId).value.trim() || 'Nexus_Media';
+            const t = translations[currentLang];
+            const customTitle = document.getElementById(inputId).value.trim() || t.defaultName;
             const formatVal = document.getElementById(selectId).value; 
             const isAudio = formatVal.includes('audio') && !formatVal.includes('video');
             const type = isAudio ? 'audio' : 'video';
@@ -532,7 +555,6 @@
             };
             evtSource.onerror = function() { evtSource.close(); };
 
-            // في البلاي ليست بنديله رقم تذكرة برضه عشان يتحفظ في الخزنة
             const ticketId = 'Ticket_' + Date.now();
             let dlUrl = `${DOWNLOAD_URL}?url=${encodeURIComponent(url)}&format_id=${encodeURIComponent(formatVal)}&type=${type}&needsMerge=${needsMerge}&customName=${encodeURIComponent(customTitle)}&clientId=${clientId}&ticketId=${ticketId}`;
             
@@ -548,7 +570,7 @@
             tbody.innerHTML = '';
             
             if (!currentFormats || currentFormats.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;">${currentLang === 'ar' ? 'لا توجد جودات متاحة' : 'No formats available'}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;">${t.noFormats}</td></tr>`;
                 return;
             }
 
@@ -622,7 +644,6 @@
             const singleVideoArea = document.getElementById('singleVideoArea');
             const playlistArea = document.getElementById('playlistArea');
 
-            // إخفاء منطقة التذكرة لو بنحلل فيديو جديد
             document.getElementById('progressContainer').style.display = 'none';
 
             if (!urlInput || !urlInput.includes('http')) {
@@ -665,7 +686,7 @@
                         downloadThumbBtn.href = finalImgSrc; 
                         thumbImg.onerror = function() { this.src = fallbackImage; downloadThumbBtn.href = fallbackImage; };
 
-                        document.getElementById('videoTitle').value = data.title || (currentLang === 'ar' ? "فيديو جاهز" : "Video Ready");
+                        document.getElementById('videoTitle').value = data.title || t.vidReady;
                         updateSourceText(currentVideoUrl); 
                         
                         currentFormats = data.formats;
@@ -692,7 +713,7 @@
         initApp();
     </script>
 <div style="text-align: center; margin-top: 30px; padding-bottom: 20px;">
-    <a href="terms.html" style="color: var(--text-muted); text-decoration: none; font-size: 14px; transition: 0.3s;" onmouseover="this.style.color='var(--neon-blue)'" onmouseout="this.style.color='var(--text-muted)'">شروط الاستخدام وإخلاء المسؤولية</a>
+    <a href="terms.html" id="t-terms" style="color: var(--text-muted); text-decoration: none; font-size: 14px; transition: 0.3s;" onmouseover="this.style.color='var(--neon-blue)'" onmouseout="this.style.color='var(--text-muted)'">شروط الاستخدام وإخلاء المسؤولية</a>
 </div>
 </body>
 </html>
