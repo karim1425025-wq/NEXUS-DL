@@ -129,40 +129,40 @@
             .trim-group { flex-wrap: wrap; }
         }
 
-.ads-container {
-    position: fixed;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 160px; 
-    height: 600px; 
-    background: var(--card-bg);
-    border: 1px dashed var(--border-color);
-    border-radius: 12px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    backdrop-filter: blur(10px);
-    z-index: 50;
-    overflow: hidden;
-}
+        .ads-container {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 160px; 
+            height: 600px; 
+            background: var(--card-bg);
+            border: 1px dashed var(--border-color);
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            backdrop-filter: blur(10px);
+            z-index: 50;
+            overflow: hidden;
+        }
 
-.ads-container img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
+        .ads-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
-.ad-right { right: 20px; }
-.ad-left { left: 20px; }
+        .ad-right { right: 20px; }
+        .ad-left { left: 20px; }
 
-@media (max-width: 1250px) {
-    .ads-container {
-        display: none;
-    }
-}
+        @media (max-width: 1250px) {
+            .ads-container {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
@@ -171,14 +171,14 @@
 <div class="ads-container ad-right">
     <div style="padding: 10px;">
         <i class="fas fa-ad" style="font-size: 2rem; color: var(--neon-blue); margin-bottom: 10px;"></i>
-        <br>مساحة إعلانية<br>(أمازون / تكنولوجيا)
+        <br>AD SPACE<br>(Amazon / Tech)
     </div>
 </div>
 
 <div class="ads-container ad-left">
     <div style="padding: 10px;">
         <i class="fas fa-ad" style="font-size: 2rem; color: var(--neon-purple); margin-bottom: 10px;"></i>
-        <br>مساحة إعلانية<br>(أمازون / تكنولوجيا)
+        <br>AD SPACE<br>(Amazon / Tech)
     </div>
 </div>
 
@@ -199,7 +199,7 @@
 
             <input type="file" id="localFileInput" accept="video/*" style="display: none;" onchange="handleLocalConversion(this)">
             <button class="control-btn" id="convertToggle" onclick="document.getElementById('localFileInput').click()" title="تحويل فيديو لصوت من الجهاز">
-                <i class="fas fa-headphones"></i> <span id="convertText">أوفلاين MP3</span>
+                <i class="fas fa-headphones"></i> <span id="convertText">تحويل MP3</span>
             </button>
 
             <button class="control-btn" id="langToggle" onclick="toggleLanguage()"><i class="fas fa-globe"></i> <span id="langText">English</span></button>
@@ -295,6 +295,7 @@
                 <input type="text" id="vaultTicketInput" class="vault-input" placeholder="مثال: Ticket_123456">
                 <br>
                 <button class="btn-vault" id="t-vaultBtn" onclick="restoreFromVault()"><i class="fas fa-box-open"></i> استرجاع الملف</button>
+                <p id="vaultMsg" style="color: var(--neon-blue); font-size: 0.9rem; margin-top: 10px; display: none; font-weight: bold;"></p>
             </div>
 
         </div>
@@ -315,7 +316,7 @@
                 msgEmpty: "يرجى إدخال الرابط أولاً!", msgError: "عذراً، الرابط غير صالح أو محمي.", 
                 thQuality: "الجودة", thFormat: "الحجم", thAction: "إجراء", dlBtn: "تحميل",
                 sourceYT: "يوتيوب", sourceTK: "تيك توك", sourceIG: "انستجرام", sourceFB: "فيسبوك", sourceX: "إكس (تويتر)", sourceUnknown: "فيديو",
-                convertBtn: "أوفلاين MP3", converting: "جاري التحويل...", dlThumbBtn: "تحميل الصورة",
+                convertBtn: "تحويل MP3", converting: "جاري التحويل...", dlThumbBtn: "تحميل الصورة",
                 historyTitle: "سجل التحميلات", historyBtn: "السجل", trimStart: "بداية (مثال: 7)", trimEnd: "نهاية (مثال: 12)",
                 playAudioMP3: "🎵 صوت MP3", playVideoHD: "🎬 فيديو عالي الدقة", playVideoSD: "🎬 فيديو جودة عادية", emptyHistory: "لا توجد تحميلات سابقة.",
                 min: "دقائق", sec: "ثواني",
@@ -333,7 +334,7 @@
                 msgEmpty: "Please enter a valid URL!", msgError: "Sorry, link is invalid or protected.", 
                 thQuality: "Quality", thFormat: "Size", thAction: "Action", dlBtn: "Download",
                 sourceYT: "YouTube", sourceTK: "TikTok", sourceIG: "Instagram", sourceFB: "Facebook", sourceX: "X (Twitter)", sourceUnknown: "Video",
-                convertBtn: "Offline MP3", converting: "Converting...", dlThumbBtn: "Cover Image",
+                convertBtn: "Convert MP3", converting: "Converting...", dlThumbBtn: "Cover Image",
                 historyTitle: "Download History", historyBtn: "History", trimStart: "Start (ex: 7)", trimEnd: "End (ex: 12)",
                 playAudioMP3: "🎵 Audio MP3", playVideoHD: "🎬 Video HD", playVideoSD: "🎬 Video SD", emptyHistory: "No download history found.",
                 min: "Mins", sec: "Secs",
@@ -400,22 +401,53 @@
             modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
         }
 
+        // ==========================================
+        // إضافة دالة الحذف الخاصة بالهيستوري
+        // ==========================================
+        function deleteHistoryItem(url) {
+            let history = JSON.parse(localStorage.getItem('nexus_history')) || [];
+            history = history.filter(item => item.url !== url);
+            localStorage.setItem('nexus_history', JSON.stringify(history));
+            renderHistory();
+        }
+
         function saveToHistory(title, url, thumb) {
             let history = JSON.parse(localStorage.getItem('nexus_history')) || [];
             history = history.filter(item => item.url !== url); 
-            history.unshift({ title, url, thumb });
+            
+            let safeThumb = thumb;
+            if (thumb && thumb.startsWith('http') && !thumb.includes('/api/proxy')) {
+                safeThumb = `${PROXY_URL}?url=${encodeURIComponent(thumb)}`;
+            }
+
+            history.unshift({ title, url, thumb: safeThumb });
             if (history.length > 20) history.pop(); 
             localStorage.setItem('nexus_history', JSON.stringify(history));
             renderHistory();
         }
 
+        // ==========================================
+        // تعديل كود عرض الهيستوري (زرار الحذف + صورة احتياطية)
+        // ==========================================
         function renderHistory() {
             const t = translations[currentLang]; const list = document.getElementById('historyList');
             let history = JSON.parse(localStorage.getItem('nexus_history')) || [];
             if (history.length === 0) { list.innerHTML = `<p style="text-align:center; color:var(--text-muted);">${t.emptyHistory}</p>`; return; }
             list.innerHTML = '';
+            
+            const fallbackImg = "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=500&auto=format&fit=crop";
+            
             history.forEach(item => {
-                list.innerHTML += `<div class="history-item"><img src="${item.thumb}" alt="thumb"><div>${item.title}</div><a href="#" onclick="document.getElementById('videoUrl').value='${item.url}'; toggleHistory(); analyzeUrl();"><i class="fas fa-download"></i></a></div>`;
+                let imgSrc = item.thumb || fallbackImg;
+                list.innerHTML += `
+                <div class="history-item">
+                    <img src="${imgSrc}" onerror="this.src='${fallbackImg}'" alt="thumb">
+                    <div>${item.title}</div>
+                    <div style="display: flex; gap: 15px; align-items: center;">
+                        <a href="#" title="تحميل" onclick="document.getElementById('videoUrl').value='${item.url}'; toggleHistory(); analyzeUrl();" style="color:var(--neon-blue);"><i class="fas fa-download"></i></a>
+                        <a href="#" title="حذف" onclick="deleteHistoryItem('${item.url}')" style="color:#ff3366;"><i class="fas fa-trash"></i></a>
+                    </div>
+                </div>`;
             });
         }
 
@@ -522,12 +554,68 @@
             document.body.appendChild(iframe);
         }
 
-        function restoreFromVault() {
+        let vaultInterval = null;
+        async function restoreFromVault() {
             const ticketInput = document.getElementById('vaultTicketInput').value.trim();
             const t = translations[currentLang];
+            const btn = document.getElementById('t-vaultBtn');
+            const msgLabel = document.getElementById('vaultMsg');
+            
             if (!ticketInput) return alert(t.alertVault);
             
-            window.open(`${VAULT_URL}?ticketId=${ticketInput}`, '_blank');
+            if (vaultInterval) clearInterval(vaultInterval);
+            
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${currentLang === 'ar' ? 'جاري الفحص...' : 'Checking...'}`;
+            msgLabel.style.display = 'block';
+            msgLabel.style.color = '#ffaa00';
+            msgLabel.innerText = currentLang === 'ar' ? 'جاري فحص الخزنة...' : 'Checking vault...';
+
+            try {
+                // بنسأل السيرفر عن حالة التذكرة
+                const res = await fetch(`${BASE_SERVER}/api/vault/status?ticketId=${encodeURIComponent(ticketInput)}`);
+                
+                if (!res.ok) throw new Error("Server Error");
+                
+                const data = await res.json();
+
+                // لازم السيرفر يبعت ready: true بالظبط
+                if (data && data.ready === true) {
+                    btn.disabled = false;
+                    btn.innerHTML = t.vaultBtn;
+                    msgLabel.style.color = 'var(--neon-blue)';
+                    msgLabel.innerText = currentLang === 'ar' ? 'الملف جاهز! جاري التحميل...' : 'Ready! Downloading...';
+                    window.location.href = `${VAULT_URL}?ticketId=${encodeURIComponent(ticketInput)}`;
+                } else {
+                    // لو لسه مخلصش، هنستنى ونفحص كل 5 ثواني
+                    msgLabel.innerText = currentLang === 'ar' 
+                        ? 'الملف لسه بيتحمل في السيرفر! خليك فاتح الصفحة وهينزل لوحده.' 
+                        : 'File is still processing! Keep this page open.';
+                    
+                    vaultInterval = setInterval(async () => {
+                        try {
+                            const pollRes = await fetch(`${BASE_SERVER}/api/vault/status?ticketId=${encodeURIComponent(ticketInput)}`);
+                            if (!pollRes.ok) return;
+                            
+                            const pollData = await pollRes.json();
+                            if (pollData && pollData.ready === true) {
+                                clearInterval(vaultInterval);
+                                btn.disabled = false;
+                                btn.innerHTML = t.vaultBtn;
+                                msgLabel.style.color = 'var(--neon-blue)';
+                                msgLabel.innerText = currentLang === 'ar' ? 'الملف جاهز! جاري التحميل...' : 'Ready! Downloading...';
+                                window.location.href = `${VAULT_URL}?ticketId=${encodeURIComponent(ticketInput)}`;
+                            }
+                        } catch (e) { console.error("Polling error", e); }
+                    }, 5000);
+                }
+            } catch (error) {
+                btn.disabled = false;
+                btn.innerHTML = t.vaultBtn;
+                msgLabel.style.color = '#ff3366';
+                msgLabel.innerText = currentLang === 'ar' ? 'عذراً، التذكرة غلط أو الملف اتمسح.' : 'Invalid ticket or file expired.';
+                console.error(error);
+            }
         }
 
         function downloadPlaylistItem(btnElement, url, inputId, selectId, clientId) {
