@@ -129,62 +129,36 @@
             .trim-group { flex-wrap: wrap; }
         }
 
-        .ads-container {
-            position: fixed;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 160px; 
-            height: 600px; 
-            background: var(--card-bg);
-            border: 1px dashed var(--border-color);
-            border-radius: 12px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            backdrop-filter: blur(10px);
-            z-index: 50;
-            overflow: hidden;
-        }
-
-        .ads-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .ad-right { right: 20px; }
-        .ad-left { left: 20px; }
-
-        @media (max-width: 1250px) {
-            .ads-container {
-                display: none;
-            }
-        }
+        .ads-container { position: fixed; top: 50%; transform: translateY(-50%); width: 160px; height: 600px; background: var(--card-bg); border: 1px dashed var(--border-color); border-radius: 12px; display: flex; justify-content: center; align-items: center; text-align: center; color: var(--text-muted); font-size: 0.9rem; backdrop-filter: blur(10px); z-index: 50; overflow: hidden; }
+        .ads-container img { width: 100%; height: 100%; object-fit: cover; }
+        .ad-right { right: 20px; } .ad-left { left: 20px; }
+        @media (max-width: 1250px) { .ads-container { display: none; } }
     </style>
 </head>
 <body>
 
     <div class="grid-bg"></div>
-<div class="ads-container ad-right">
-    <div style="padding: 10px;">
-        <i class="fas fa-ad" style="font-size: 2rem; color: var(--neon-blue); margin-bottom: 10px;"></i>
-        <br>AD SPACE<br>(Amazon / Tech)
+    <div class="ads-container ad-right">
+        <div style="padding: 10px;">
+            <i class="fas fa-ad" style="font-size: 2rem; color: var(--neon-blue); margin-bottom: 10px;"></i>
+            <br>AD SPACE<br>(Amazon / Tech)
+        </div>
     </div>
-</div>
 
-<div class="ads-container ad-left">
-    <div style="padding: 10px;">
-        <i class="fas fa-ad" style="font-size: 2rem; color: var(--neon-purple); margin-bottom: 10px;"></i>
-        <br>AD SPACE<br>(Amazon / Tech)
+    <div class="ads-container ad-left">
+        <div style="padding: 10px;">
+            <i class="fas fa-ad" style="font-size: 2rem; color: var(--neon-purple); margin-bottom: 10px;"></i>
+            <br>AD SPACE<br>(Amazon / Tech)
+        </div>
     </div>
-</div>
 
     <nav class="navbar">
         <div class="nav-logo">NEXUS<span>-DL</span></div>
         <div class="nav-controls">
+            <button class="control-btn" id="apiToggleBtn" onclick="toggleApiModal()" style="border-color: var(--neon-purple); color: var(--neon-purple);">
+                <i class="fas fa-key"></i> <span id="t-apiBtn">مفتاح API</span>
+            </button>
+
             <button class="control-btn" id="btnHistory" onclick="toggleHistory()" title="سجل التحميلات">
                 <i class="fas fa-history"></i> <span id="t-history">سجل التحميلات</span>
             </button>
@@ -206,6 +180,22 @@
             <button class="control-btn" id="themeToggle" onclick="toggleTheme()"><i class="fas fa-moon" id="themeIcon"></i></button>
         </div>
     </nav>
+
+    <div class="modal" id="apiModal">
+        <div class="modal-content" style="text-align: center;">
+            <div class="modal-header">
+                <span id="t-apiTitle" style="color: var(--neon-purple);"><i class="fas fa-key"></i> مفتاح الاشتراك</span>
+                <i class="fas fa-times close-btn" onclick="toggleApiModal()"></i>
+            </div>
+            <p id="t-apiDesc" style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.95rem;">
+                أدخل مفتاح الاشتراك (API Key) الخاص بك للتمتع بخدمات التحميل.
+            </p>
+            <input type="text" id="apiKeyInput" class="vault-input" placeholder="مثال: NEXUS-PRO-..." style="width: 100%; margin-bottom: 20px; max-width: 100%;">
+            <button class="btn-analyze" onclick="saveApiKey()" style="background: linear-gradient(45deg, #bc13fe, #0052ff);">
+                <i class="fas fa-save"></i> <span id="t-apiSave">حفظ المفتاح</span>
+            </button>
+        </div>
+    </div>
 
     <div class="modal" id="historyModal">
         <div class="modal-content">
@@ -302,18 +292,27 @@
     </div>
 
     <script>
-        const BASE_SERVER = "https://104d8dc6-282f-410c-937a-f6bf842aec41-00-3ffyh99rbk4kt.worf.replit.dev";
+        // =================================================================
+        // 🚀 السيرفر اللي الواجهة هتتصل بيه (تم التعديل لريبلت)
+        // =================================================================
+        const BASE_SERVER = "https://104d8dc6-282f-410c-937a-f6bf842aec41-00-3ffyh99rbk4kt.worf.replit.dev"; 
+        
         const BACKEND_URL = BASE_SERVER + "/api/info"; 
         const DOWNLOAD_URL = BASE_SERVER + "/api/download"; 
         const CONVERT_URL = BASE_SERVER + "/api/convert"; 
         const PROXY_URL = BASE_SERVER + "/api/proxy"; 
         const VAULT_URL = BASE_SERVER + "/api/vault";
 
+        // =================================================================
+        // 🔑 قراءة مفتاح الـ API من المتصفح
+        // =================================================================
+        let API_KEY = localStorage.getItem('nexus_api_key') || "";
+
         const translations = {
             ar: {
                 langBtn: "English", title: "تحميل الفيديوهات", subtitle: "حمل فيديوهاتك المفضلة بسرعة وبأعلى جودة",
                 placeholder: "الصق الرابط هنا...", btnAnalyze: "تحليل الرابط", analyzing: "جاري فك التشفير...",
-                msgEmpty: "يرجى إدخال الرابط أولاً!", msgError: "عذراً، الرابط غير صالح أو محمي.", 
+                msgEmpty: "يرجى إدخال الرابط أولاً!", msgError: "عذراً، الرابط غير صالح أو المفتاح منتهي.", 
                 thQuality: "الجودة", thFormat: "الحجم", thAction: "إجراء", dlBtn: "تحميل",
                 sourceYT: "يوتيوب", sourceTK: "تيك توك", sourceIG: "انستجرام", sourceFB: "فيسبوك", sourceX: "إكس (تويتر)", sourceUnknown: "فيديو",
                 convertBtn: "تحويل MP3", converting: "جاري التحويل...", dlThumbBtn: "تحميل الصورة",
@@ -326,12 +325,14 @@
                 vidTitlePh: "اسم الفيديو...", vidTitleTooltip: "يمكنك تعديل اسم الملف قبل التحميل",
                 trimFrom: "قص من", trimTo: "قص إلى", progressPrep: "جاري التجهيز... ", progressDone: "✅ اكتمل! جاري حفظ الملف...",
                 progressDL: "جاري التحميل... ", noFormats: "لا توجد جودات متاحة", alertVault: "أدخل رقم التذكرة أولاً!",
-                alertConv: "حدث خطأ أثناء التحويل", vidReady: "فيديو جاهز", defaultName: "Nexus_Media"
+                alertConv: "حدث خطأ أثناء التحويل", vidReady: "فيديو جاهز", defaultName: "Nexus_Media",
+                apiBtn: "مفتاح API", apiTitle: "<i class='fas fa-key'></i> مفتاح الاشتراك", apiDesc: "أدخل مفتاح الاشتراك (API Key) الخاص بك للتمتع بخدمات التحميل.",
+                apiSave: "حفظ المفتاح", alertNoKey: "يرجى إدخال مفتاح الـ API أولاً!", keySaved: "تم حفظ المفتاح بنجاح!"
             },
             en: {
                 langBtn: "عربي", title: "Video Downloader", subtitle: "Download your favorite videos fast and in high quality",
                 placeholder: "Paste URL here...", btnAnalyze: "Analyze", analyzing: "Decrypting...",
-                msgEmpty: "Please enter a valid URL!", msgError: "Sorry, link is invalid or protected.", 
+                msgEmpty: "Please enter a valid URL!", msgError: "Sorry, link invalid or API Key expired.", 
                 thQuality: "Quality", thFormat: "Size", thAction: "Action", dlBtn: "Download",
                 sourceYT: "YouTube", sourceTK: "TikTok", sourceIG: "Instagram", sourceFB: "Facebook", sourceX: "X (Twitter)", sourceUnknown: "Video",
                 convertBtn: "Convert MP3", converting: "Converting...", dlThumbBtn: "Cover Image",
@@ -344,7 +345,9 @@
                 vidTitlePh: "Video Name...", vidTitleTooltip: "You can edit the file name before downloading",
                 trimFrom: "Trim From", trimTo: "Trim To", progressPrep: "Preparing... ", progressDone: "✅ Done! Saving file...",
                 progressDL: "Downloading... ", noFormats: "No formats available", alertVault: "Enter ticket ID first!",
-                alertConv: "Error during conversion", vidReady: "Video Ready", defaultName: "Nexus_Media"
+                alertConv: "Error during conversion", vidReady: "Video Ready", defaultName: "Nexus_Media",
+                apiBtn: "API Key", apiTitle: "<i class='fas fa-key'></i> Subscription Key", apiDesc: "Enter your subscription API Key to enable downloading services.",
+                apiSave: "Save Key", alertNoKey: "Please enter your API Key first!", keySaved: "API Key saved successfully!"
             }
         };
 
@@ -357,6 +360,23 @@
         function toggleTheme() { currentTheme = currentTheme === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', currentTheme); localStorage.setItem('nexus_theme', currentTheme); updateThemeIcon(); }
         function updateThemeIcon() { document.getElementById('themeIcon').className = currentTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun'; }
         
+        // =================================================================
+        // 🚀 دوال التحكم في نافذة المفتاح (API Modal)
+        // =================================================================
+        function toggleApiModal() {
+            const modal = document.getElementById('apiModal');
+            document.getElementById('apiKeyInput').value = API_KEY;
+            modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function saveApiKey() {
+            const keyInput = document.getElementById('apiKeyInput').value.trim();
+            API_KEY = keyInput;
+            localStorage.setItem('nexus_api_key', keyInput);
+            toggleApiModal();
+            alert(translations[currentLang].keySaved);
+        }
+
         function toggleLanguage() {
             currentLang = currentLang === 'ar' ? 'en' : 'ar'; localStorage.setItem('nexus_lang', currentLang);
             applyLanguage(currentLang); renderHistory();
@@ -388,6 +408,10 @@
                 document.getElementById('videoTitle').placeholder = t.vidTitlePh;
                 document.getElementById('videoTitle').title = t.vidTitleTooltip;
             }
+            if (document.getElementById('t-apiBtn')) document.getElementById('t-apiBtn').innerText = t.apiBtn;
+            if (document.getElementById('t-apiTitle')) document.getElementById('t-apiTitle').innerHTML = t.apiTitle;
+            if (document.getElementById('t-apiDesc')) document.getElementById('t-apiDesc').innerText = t.apiDesc;
+            if (document.getElementById('t-apiSave')) document.getElementById('t-apiSave').innerText = t.apiSave;
         }
 
         document.getElementById('videoUrl').addEventListener('click', async function() {
@@ -401,9 +425,6 @@
             modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
         }
 
-        // ==========================================
-        // إضافة دالة الحذف الخاصة بالهيستوري
-        // ==========================================
         function deleteHistoryItem(url) {
             let history = JSON.parse(localStorage.getItem('nexus_history')) || [];
             history = history.filter(item => item.url !== url);
@@ -414,29 +435,22 @@
         function saveToHistory(title, url, thumb) {
             let history = JSON.parse(localStorage.getItem('nexus_history')) || [];
             history = history.filter(item => item.url !== url); 
-            
             let safeThumb = thumb;
             if (thumb && thumb.startsWith('http') && !thumb.includes('/api/proxy')) {
-                safeThumb = `${PROXY_URL}?url=${encodeURIComponent(thumb)}`;
+                safeThumb = `${PROXY_URL}?url=${encodeURIComponent(thumb)}&apikey=${API_KEY}`;
             }
-
             history.unshift({ title, url, thumb: safeThumb });
             if (history.length > 20) history.pop(); 
             localStorage.setItem('nexus_history', JSON.stringify(history));
             renderHistory();
         }
 
-        // ==========================================
-        // تعديل كود عرض الهيستوري (زرار الحذف + صورة احتياطية)
-        // ==========================================
         function renderHistory() {
             const t = translations[currentLang]; const list = document.getElementById('historyList');
             let history = JSON.parse(localStorage.getItem('nexus_history')) || [];
             if (history.length === 0) { list.innerHTML = `<p style="text-align:center; color:var(--text-muted);">${t.emptyHistory}</p>`; return; }
             list.innerHTML = '';
-            
             const fallbackImg = "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=500&auto=format&fit=crop";
-            
             history.forEach(item => {
                 let imgSrc = item.thumb || fallbackImg;
                 list.innerHTML += `
@@ -452,22 +466,17 @@
         }
 
         function formatTrimTime(val, unit) {
-            if (!val) return '';
-            val = val.trim();
+            if (!val) return ''; val = val.trim();
             if (val.includes(':')) return val; 
-            if (!isNaN(val)) {
-                if (unit === 'min') return val + ':00'; 
-                if (unit === 'sec') return val; 
-            }
+            if (!isNaN(val)) { if (unit === 'min') return val + ':00'; if (unit === 'sec') return val; }
             return val;
         }
 
         async function handleLocalConversion(input) {
+            if (!API_KEY) { alert(translations[currentLang].alertNoKey); toggleApiModal(); return; }
             if (!input.files || input.files.length === 0) return;
-            const file = input.files[0];
-            const t = translations[currentLang];
+            const file = input.files[0]; const t = translations[currentLang];
             const quality = document.getElementById('audioQuality').value; 
-            
             const btn = document.getElementById('convertToggle');
             const originalHtml = btn.innerHTML;
             
@@ -475,52 +484,36 @@
             btn.disabled = true;
 
             const formData = new FormData();
-            formData.append('video', file);
-            formData.append('quality', quality); 
+            formData.append('video', file); formData.append('quality', quality); formData.append('apikey', API_KEY);
 
             try {
                 const response = await fetch(CONVERT_URL, { method: 'POST', body: formData });
                 if (!response.ok) throw new Error('Conversion failed');
-
                 const blob = await response.blob();
                 const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.style.display = 'none';
-                a.href = url;
+                const a = document.createElement('a'); a.style.display = 'none'; a.href = url;
                 a.download = file.name.replace(/\.[^/.]+$/, "") + ".mp3";
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                
+                document.body.appendChild(a); a.click(); window.URL.revokeObjectURL(url);
                 btn.innerHTML = `<i class="fas fa-check"></i>`;
                 setTimeout(() => { btn.innerHTML = originalHtml; btn.disabled = false; }, 2000);
             } catch (error) {
-                alert(t.alertConv);
-                btn.innerHTML = originalHtml; 
-                btn.disabled = false;
-            } finally {
-                input.value = ''; 
-            }
+                alert(t.alertConv); btn.innerHTML = originalHtml; btn.disabled = false;
+            } finally { input.value = ''; }
         }
 
         function fetchMergedDownload(index, btnElement) {
-            const formatInfo = currentFormats[index];
-            const t = translations[currentLang];
+            if (!API_KEY) { alert(translations[currentLang].alertNoKey); toggleApiModal(); return; }
+            const formatInfo = currentFormats[index]; const t = translations[currentLang];
             const originalHtml = btnElement.innerHTML;
             const customTitle = document.getElementById('videoTitle').value.trim() || t.defaultName;
-            
             const unit = document.getElementById('trimUnit').value;
             const trimStart = formatTrimTime(document.getElementById('trimStart').value, unit);
             const trimEnd = formatTrimTime(document.getElementById('trimEnd').value, unit);
-            
-            const clientId = Date.now().toString();
-            const ticketId = 'Ticket_' + Date.now(); 
+            const clientId = Date.now().toString(); const ticketId = 'Ticket_' + Date.now(); 
 
             saveToHistory(customTitle, currentVideoUrl, document.getElementById('videoThumb').src);
 
-            btnElement.disabled = true;
-            btnElement.innerHTML = `<i class="fas fa-spinner fa-spin"></i> 0%`;
-
+            btnElement.disabled = true; btnElement.innerHTML = `<i class="fas fa-spinner fa-spin"></i> 0%`;
             document.getElementById('progressContainer').style.display = 'block';
             document.getElementById('ticketDisplay').innerText = ticketId;
             document.getElementById('progressFill').style.width = '0%';
@@ -529,171 +522,133 @@
             const evtSource = new EventSource(`${BACKEND_URL.replace('/info', '/progress')}?id=${clientId}`);
             evtSource.onmessage = function(e) {
                 if (e.data === 'DONE') {
-                    btnElement.innerHTML = `<i class="fas fa-check"></i>`;
-                    btnElement.disabled = false;
+                    btnElement.innerHTML = `<i class="fas fa-check"></i>`; btnElement.disabled = false;
                     document.getElementById('progressFill').style.width = '100%';
                     document.getElementById('progressText').innerText = t.progressDone;
-                    evtSource.close();
-                    setTimeout(() => { btnElement.innerHTML = originalHtml; }, 3000);
+                    evtSource.close(); setTimeout(() => { btnElement.innerHTML = originalHtml; }, 3000);
                 } else {
-                    const percent = e.data;
-                    btnElement.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${percent}%`;
+                    const percent = e.data; btnElement.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${percent}%`;
                     document.getElementById('progressFill').style.width = `${percent}%`;
                     document.getElementById('progressText').innerText = t.progressDL + percent + '%';
                 }
             };
             evtSource.onerror = function() { evtSource.close(); };
             
-            let dlUrl = `${DOWNLOAD_URL}?url=${encodeURIComponent(currentVideoUrl)}&format_id=${formatInfo.format_id || formatInfo.id}&type=${formatInfo.type}&needsMerge=${formatInfo.needsMerge}&customName=${encodeURIComponent(customTitle)}&clientId=${clientId}&ticketId=${ticketId}`;
+            // 🚀 إضافة الطول والعرض لـ URL عشان السيرفر يتأكد من الباقة
+            let dlUrl = `${DOWNLOAD_URL}?url=${encodeURIComponent(currentVideoUrl)}&format_id=${formatInfo.format_id || formatInfo.id}&type=${formatInfo.type}&needsMerge=${formatInfo.needsMerge}&customName=${encodeURIComponent(customTitle)}&clientId=${clientId}&ticketId=${ticketId}&apikey=${API_KEY}&height=${formatInfo.height || 0}&abr=${formatInfo.abr || 0}`;
             if(trimStart) dlUrl += `&trimStart=${encodeURIComponent(trimStart)}`;
             if(trimEnd) dlUrl += `&trimEnd=${encodeURIComponent(trimEnd)}`;
             
-            const iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            iframe.src = dlUrl;
-            document.body.appendChild(iframe);
+            const iframe = document.createElement('iframe'); iframe.style.display = 'none'; iframe.src = dlUrl; document.body.appendChild(iframe);
         }
 
         let vaultInterval = null;
         async function restoreFromVault() {
+            if (!API_KEY) { alert(translations[currentLang].alertNoKey); toggleApiModal(); return; }
             const ticketInput = document.getElementById('vaultTicketInput').value.trim();
-            const t = translations[currentLang];
-            const btn = document.getElementById('t-vaultBtn');
+            const t = translations[currentLang]; const btn = document.getElementById('t-vaultBtn');
             const msgLabel = document.getElementById('vaultMsg');
             
             if (!ticketInput) return alert(t.alertVault);
-            
             if (vaultInterval) clearInterval(vaultInterval);
             
-            btn.disabled = true;
-            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${currentLang === 'ar' ? 'جاري الفحص...' : 'Checking...'}`;
-            msgLabel.style.display = 'block';
-            msgLabel.style.color = '#ffaa00';
+            btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${currentLang === 'ar' ? 'جاري الفحص...' : 'Checking...'}`;
+            msgLabel.style.display = 'block'; msgLabel.style.color = '#ffaa00';
             msgLabel.innerText = currentLang === 'ar' ? 'جاري فحص الخزنة...' : 'Checking vault...';
 
             try {
-                // بنسأل السيرفر عن حالة التذكرة
-                const res = await fetch(`${BASE_SERVER}/api/vault/status?ticketId=${encodeURIComponent(ticketInput)}`);
-                
+                const res = await fetch(`${BASE_SERVER}/api/vault/status?ticketId=${encodeURIComponent(ticketInput)}&apikey=${API_KEY}`);
                 if (!res.ok) throw new Error("Server Error");
-                
                 const data = await res.json();
 
-                // لازم السيرفر يبعت ready: true بالظبط
                 if (data && data.ready === true) {
-                    btn.disabled = false;
-                    btn.innerHTML = t.vaultBtn;
-                    msgLabel.style.color = 'var(--neon-blue)';
+                    btn.disabled = false; btn.innerHTML = t.vaultBtn; msgLabel.style.color = 'var(--neon-blue)';
                     msgLabel.innerText = currentLang === 'ar' ? 'الملف جاهز! جاري التحميل...' : 'Ready! Downloading...';
-                    window.location.href = `${VAULT_URL}?ticketId=${encodeURIComponent(ticketInput)}`;
+                    window.location.href = `${VAULT_URL}?ticketId=${encodeURIComponent(ticketInput)}&apikey=${API_KEY}`;
                 } else {
-                    // لو لسه مخلصش، هنستنى ونفحص كل 5 ثواني
-                    msgLabel.innerText = currentLang === 'ar' 
-                        ? 'الملف لسه بيتحمل في السيرفر! خليك فاتح الصفحة وهينزل لوحده.' 
-                        : 'File is still processing! Keep this page open.';
-                    
+                    msgLabel.innerText = currentLang === 'ar' ? 'الملف لسه بيتحمل في السيرفر! خليك فاتح الصفحة وهينزل لوحده.' : 'File is still processing! Keep this page open.';
                     vaultInterval = setInterval(async () => {
                         try {
-                            const pollRes = await fetch(`${BASE_SERVER}/api/vault/status?ticketId=${encodeURIComponent(ticketInput)}`);
+                            const pollRes = await fetch(`${BASE_SERVER}/api/vault/status?ticketId=${encodeURIComponent(ticketInput)}&apikey=${API_KEY}`);
                             if (!pollRes.ok) return;
-                            
                             const pollData = await pollRes.json();
                             if (pollData && pollData.ready === true) {
-                                clearInterval(vaultInterval);
-                                btn.disabled = false;
-                                btn.innerHTML = t.vaultBtn;
-                                msgLabel.style.color = 'var(--neon-blue)';
-                                msgLabel.innerText = currentLang === 'ar' ? 'الملف جاهز! جاري التحميل...' : 'Ready! Downloading...';
-                                window.location.href = `${VAULT_URL}?ticketId=${encodeURIComponent(ticketInput)}`;
+                                clearInterval(vaultInterval); btn.disabled = false; btn.innerHTML = t.vaultBtn;
+                                msgLabel.style.color = 'var(--neon-blue)'; msgLabel.innerText = currentLang === 'ar' ? 'الملف جاهز! جاري التحميل...' : 'Ready! Downloading...';
+                                window.location.href = `${VAULT_URL}?ticketId=${encodeURIComponent(ticketInput)}&apikey=${API_KEY}`;
                             }
                         } catch (e) { console.error("Polling error", e); }
                     }, 5000);
                 }
             } catch (error) {
-                btn.disabled = false;
-                btn.innerHTML = t.vaultBtn;
-                msgLabel.style.color = '#ff3366';
+                btn.disabled = false; btn.innerHTML = t.vaultBtn; msgLabel.style.color = '#ff3366';
                 msgLabel.innerText = currentLang === 'ar' ? 'عذراً، التذكرة غلط أو الملف اتمسح.' : 'Invalid ticket or file expired.';
-                console.error(error);
             }
         }
 
         function downloadPlaylistItem(btnElement, url, inputId, selectId, clientId) {
-            const t = translations[currentLang];
-            const customTitle = document.getElementById(inputId).value.trim() || t.defaultName;
+            if (!API_KEY) { alert(translations[currentLang].alertNoKey); toggleApiModal(); return; }
+            const t = translations[currentLang]; const customTitle = document.getElementById(inputId).value.trim() || t.defaultName;
             const formatVal = document.getElementById(selectId).value; 
             const isAudio = formatVal.includes('audio') && !formatVal.includes('video');
-            const type = isAudio ? 'audio' : 'video';
-            const needsMerge = isAudio ? 'false' : 'true';
+            const type = isAudio ? 'audio' : 'video'; const needsMerge = isAudio ? 'false' : 'true';
             const originalHtml = btnElement.innerHTML;
 
-            btnElement.disabled = true;
-            btnElement.innerHTML = `<i class="fas fa-spinner fa-spin"></i> 0%`;
-
+            btnElement.disabled = true; btnElement.innerHTML = `<i class="fas fa-spinner fa-spin"></i> 0%`;
             const evtSource = new EventSource(`${BACKEND_URL.replace('/info', '/progress')}?id=${clientId}`);
             evtSource.onmessage = function(e) {
                 if (e.data === 'DONE') {
-                    btnElement.innerHTML = `<i class="fas fa-check"></i>`;
-                    btnElement.disabled = false;
-                    evtSource.close();
-                    setTimeout(() => { btnElement.innerHTML = originalHtml; }, 3000);
-                } else {
-                    btnElement.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${e.data}%`;
-                }
+                    btnElement.innerHTML = `<i class="fas fa-check"></i>`; btnElement.disabled = false;
+                    evtSource.close(); setTimeout(() => { btnElement.innerHTML = originalHtml; }, 3000);
+                } else { btnElement.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${e.data}%`; }
             };
             evtSource.onerror = function() { evtSource.close(); };
 
             const ticketId = 'Ticket_' + Date.now();
-            let dlUrl = `${DOWNLOAD_URL}?url=${encodeURIComponent(url)}&format_id=${encodeURIComponent(formatVal)}&type=${type}&needsMerge=${needsMerge}&customName=${encodeURIComponent(customTitle)}&clientId=${clientId}&ticketId=${ticketId}`;
-            
-            const iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            iframe.src = dlUrl;
-            document.body.appendChild(iframe);
+            let dlUrl = `${DOWNLOAD_URL}?url=${encodeURIComponent(url)}&format_id=${encodeURIComponent(formatVal)}&type=${type}&needsMerge=${needsMerge}&customName=${encodeURIComponent(customTitle)}&clientId=${clientId}&ticketId=${ticketId}&apikey=${API_KEY}`;
+            const iframe = document.createElement('iframe'); iframe.style.display = 'none'; iframe.src = dlUrl; document.body.appendChild(iframe);
         }
 
+        // 🚀 تعديل الدالة لإضافة زر القفل لو الجودة مش متاحة 🚀
         function buildDynamicTable() {
-            const tbody = document.getElementById('tableBody'); 
-            const t = translations[currentLang]; 
+            const tbody = document.getElementById('tableBody'); const t = translations[currentLang]; 
             tbody.innerHTML = '';
-            
             if (!currentFormats || currentFormats.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;">${t.noFormats}</td></tr>`;
-                return;
+                tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;">${t.noFormats}</td></tr>`; return;
             }
-
             currentFormats.forEach((f, index) => {
-                const isAudio = f.type === 'audio';
-                const iconClass = isAudio ? 'fas fa-music' : 'fas fa-video';
-                const nameClass = isAudio ? 'q-name audio' : 'q-name';
-                const btnClass = isAudio ? 'btn-dl-small audio-btn' : 'btn-dl-small video-btn';
+                const isAudio = f.type === 'audio'; const iconClass = isAudio ? 'fas fa-music' : 'fas fa-video';
+                const nameClass = isAudio ? 'q-name audio' : 'q-name'; const btnClass = isAudio ? 'btn-dl-small audio-btn' : 'btn-dl-small video-btn';
                 
+                let btnHtml = '';
+                // لو السيرفر سمح بيها، بيظهر زر التحميل، لو لأ بيظهر زر مقفول
+                if (f.isAllowed || f.isAllowed === undefined) {
+                    btnHtml = `<button class="${btnClass}" onclick="fetchMergedDownload(${index}, this)">
+                                  <i class="fas fa-download"></i> <span class="t-dlBtnText">${t.dlBtn}</span>
+                               </button>`;
+                } else {
+                    const lockMsg = currentLang === 'ar' ? 'هذه الجودة غير متاحة في باقتك الحالية. يرجى رفع الاشتراك!' : 'Quality exceeds your current plan limits. Please upgrade!';
+                    btnHtml = `<button class="${btnClass}" style="background: rgba(255, 51, 102, 0.1); border-color: #ff3366; color: #ff3366;" onclick="alert('${lockMsg}')">
+                                  <i class="fas fa-lock"></i> <span>${currentLang === 'ar' ? 'ترقية الاشتراك' : 'Upgrade Plan'}</span>
+                               </button>`;
+                }
+
                 tbody.innerHTML += `
                     <tr>
                         <td><div class="${nameClass}"><i class="${iconClass}"></i> ${f.quality}</div></td>
                         <td><span class="q-format">${f.size}</span></td>
-                        <td>
-                            <button class="${btnClass}" onclick="fetchMergedDownload(${index}, this)">
-                                <i class="fas fa-download"></i> <span class="t-dlBtnText">${t.dlBtn}</span>
-                            </button>
-                        </td>
+                        <td>${btnHtml}</td>
                     </tr>`;
             });
         }
 
         function buildPlaylistUI(entries, title) {
-            const t = translations[currentLang];
-            const container = document.getElementById('playlistItems');
-            document.getElementById('playlistTitleDisplay').innerText = title;
-            container.innerHTML = '';
-
+            const t = translations[currentLang]; const container = document.getElementById('playlistItems');
+            document.getElementById('playlistTitleDisplay').innerText = title; container.innerHTML = '';
             entries.forEach((e, idx) => {
-                const inputId = `pl_title_${idx}`;
-                const selectId = `pl_select_${idx}`;
-                const clientId = `pl_client_${Date.now()}_${idx}`;
+                const inputId = `pl_title_${idx}`; const selectId = `pl_select_${idx}`; const clientId = `pl_client_${Date.now()}_${idx}`;
                 const fallbackImg = "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=500&auto=format&fit=crop";
-                const imgUrl = e.thumbnail ? `${PROXY_URL}?url=${encodeURIComponent(e.thumbnail)}` : fallbackImg;
-
+                const imgUrl = e.thumbnail ? `${PROXY_URL}?url=${encodeURIComponent(e.thumbnail)}&apikey=${API_KEY}` : fallbackImg;
                 container.innerHTML += `
                     <div class="playlist-item">
                         <img src="${imgUrl}" onerror="this.src='${fallbackImg}'">
@@ -724,80 +679,49 @@
         }
 
         async function analyzeUrl() {
+            if (!API_KEY) { alert(translations[currentLang].alertNoKey); toggleApiModal(); return; }
             const urlInput = document.getElementById('videoUrl').value.trim(); 
-            const t = translations[currentLang];
-            const errorMsg = document.getElementById('errorMsg');
-            const analyzeBtn = document.getElementById('btnAnalyze');
-            const resultArea = document.getElementById('resultArea');
-            const singleVideoArea = document.getElementById('singleVideoArea');
-            const playlistArea = document.getElementById('playlistArea');
+            const t = translations[currentLang]; const errorMsg = document.getElementById('errorMsg');
+            const analyzeBtn = document.getElementById('btnAnalyze'); const resultArea = document.getElementById('resultArea');
+            const singleVideoArea = document.getElementById('singleVideoArea'); const playlistArea = document.getElementById('playlistArea');
 
             document.getElementById('progressContainer').style.display = 'none';
 
-            if (!urlInput || !urlInput.includes('http')) {
-                errorMsg.innerText = t.msgEmpty; errorMsg.style.display = 'block'; return;
-            }
+            if (!urlInput || !urlInput.includes('http')) { errorMsg.innerText = t.msgEmpty; errorMsg.style.display = 'block'; return; }
+            errorMsg.style.display = 'none'; resultArea.style.display = 'none'; currentVideoUrl = urlInput; 
             
-            errorMsg.style.display = 'none';
-            resultArea.style.display = 'none';
-            currentVideoUrl = urlInput; 
-            
-            const originalBtnHtml = analyzeBtn.innerHTML;
-            analyzeBtn.disabled = true;
+            const originalBtnHtml = analyzeBtn.innerHTML; analyzeBtn.disabled = true;
             analyzeBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> <span>${t.analyzing}</span>`;
 
             try {
                 const response = await fetch(BACKEND_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ url: currentVideoUrl, lang: currentLang }) 
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: currentVideoUrl, lang: currentLang, apikey: API_KEY }) 
                 });
-                
                 const data = await response.json();
                 
                 if (data.success) {
                     if (data.isPlaylist) {
-                        singleVideoArea.style.display = 'none';
-                        playlistArea.style.display = 'block';
-                        buildPlaylistUI(data.entries, data.title);
+                        singleVideoArea.style.display = 'none'; playlistArea.style.display = 'block'; buildPlaylistUI(data.entries, data.title);
                     } else {
-                        playlistArea.style.display = 'none';
-                        singleVideoArea.style.display = 'block';
-
+                        playlistArea.style.display = 'none'; singleVideoArea.style.display = 'block';
                         const fallbackImage = "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=500&auto=format&fit=crop";
-                        const finalImgSrc = data.thumbnail ? `${PROXY_URL}?url=${encodeURIComponent(data.thumbnail)}` : fallbackImage;
+                        const finalImgSrc = data.thumbnail ? `${PROXY_URL}?url=${encodeURIComponent(data.thumbnail)}&apikey=${API_KEY}` : fallbackImage;
                         
-                        const thumbImg = document.getElementById('videoThumb');
-                        const downloadThumbBtn = document.getElementById('downloadThumbBtn');
-                        
-                        thumbImg.src = finalImgSrc;
-                        downloadThumbBtn.href = finalImgSrc; 
+                        const thumbImg = document.getElementById('videoThumb'); const downloadThumbBtn = document.getElementById('downloadThumbBtn');
+                        thumbImg.src = finalImgSrc; downloadThumbBtn.href = finalImgSrc; 
                         thumbImg.onerror = function() { this.src = fallbackImage; downloadThumbBtn.href = fallbackImage; };
 
                         document.getElementById('videoTitle').value = data.title || t.vidReady;
-                        updateSourceText(currentVideoUrl); 
-                        
-                        currentFormats = data.formats;
-                        buildDynamicTable();
+                        updateSourceText(currentVideoUrl); currentFormats = data.formats; buildDynamicTable();
                     }
-                    
                     resultArea.style.display = 'block'; 
-                } else {
-                    throw new Error(data.error);
-                }
-            } catch (err) {
-                errorMsg.innerText = t.msgError; 
-                errorMsg.style.display = 'block';
-            } finally {
-                analyzeBtn.innerHTML = originalBtnHtml; 
-                analyzeBtn.disabled = false;
-            }
+                } else { throw new Error(data.error); }
+            } catch (err) { errorMsg.innerText = err.message || t.msgError; errorMsg.style.display = 'block';
+            } finally { analyzeBtn.innerHTML = originalBtnHtml; analyzeBtn.disabled = false; }
         }
 
-        document.getElementById('videoUrl').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') analyzeUrl();
-        });
-
+        document.getElementById('videoUrl').addEventListener('keypress', function (e) { if (e.key === 'Enter') analyzeUrl(); });
         initApp();
     </script>
 <div style="text-align: center; margin-top: 30px; padding-bottom: 20px;">
