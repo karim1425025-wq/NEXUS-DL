@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS-DL | Ultimate Downloader</title>
+    <title>  NEXUS-DL  </title>
     <link rel="icon" type="image/png" href="icon.png">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -84,14 +84,23 @@
         .btn-dl-small:disabled { opacity: 0.7; cursor: not-allowed; background: rgba(0,0,0,0.5) !important; color: var(--text-main) !important; border-color: var(--text-muted) !important; }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px; width: 90%; max-width: 500px; padding: 30px; max-height: 80vh; overflow-y: auto; }
+        .modal-content { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px; width: 90%; max-width: 600px; padding: 30px; max-height: 80vh; overflow-y: auto; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 1.5rem; font-weight: bold; }
         .close-btn { cursor: pointer; color: var(--text-muted); }
         .close-btn:hover { color: #ff3366; }
-        .history-item { display: flex; gap: 15px; padding: 10px; border-bottom: 1px solid var(--border-color); align-items: center; }
-        .history-item img { width: 80px; border-radius: 8px; }
-        .history-item div { flex: 1; font-size: 0.9rem; font-weight: bold; line-height: 1.4; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-        .history-item a { color: var(--neon-blue); font-size: 1.2rem; }
+        
+        /* 🎨 تنسيقات نافذة الـ History الجديدة */
+        #historyList { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; margin-top: 10px; }
+        .history-item { background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px; display: flex; align-items: center; gap: 12px; transition: 0.3s; }
+        .history-item:hover { border-color: var(--neon-blue); transform: translateY(-2px); }
+        .history-item img { width: 80px; height: 50px; border-radius: 8px; object-fit: cover; }
+        .history-info { flex: 1; font-size: 0.9rem; font-weight: bold; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .history-actions { display: flex; gap: 8px; }
+        .history-actions a { padding: 8px 10px; border-radius: 6px; background: var(--input-bg); transition: 0.3s; text-decoration: none; }
+        .history-actions a.dl-btn { color: var(--neon-blue); border: 1px solid rgba(0, 243, 255, 0.2); }
+        .history-actions a.dl-btn:hover { background: var(--neon-blue); color: #000; }
+        .history-actions a.del-btn { color: #ff3366; border: 1px solid rgba(255, 51, 102, 0.2); }
+        .history-actions a.del-btn:hover { background: #ff3366; color: #fff; }
 
         .playlist-item { display: flex; gap: 15px; padding: 15px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 15px; flex-wrap: wrap; align-items: center; }
         .playlist-item img { width: 120px; border-radius: 8px; aspect-ratio: 16/9; object-fit: cover; }
@@ -292,9 +301,6 @@
     </div>
 
     <script>
-        // =================================================================
-        // 🚀 السيرفر اللي الواجهة هتتصل بيه (تم التعديل لريبلت)
-        // =================================================================
         const BASE_SERVER = "https://104d8dc6-282f-410c-937a-f6bf842aec41-00-3ffyh99rbk4kt.worf.replit.dev"; 
         
         const BACKEND_URL = BASE_SERVER + "/api/info"; 
@@ -303,9 +309,6 @@
         const PROXY_URL = BASE_SERVER + "/api/proxy"; 
         const VAULT_URL = BASE_SERVER + "/api/vault";
 
-        // =================================================================
-        // 🔑 قراءة مفتاح الـ API من المتصفح
-        // =================================================================
         let API_KEY = localStorage.getItem('nexus_api_key') || "";
 
         const translations = {
@@ -317,13 +320,13 @@
                 sourceYT: "يوتيوب", sourceTK: "تيك توك", sourceIG: "انستجرام", sourceFB: "فيسبوك", sourceX: "إكس (تويتر)", sourceUnknown: "فيديو",
                 convertBtn: "تحويل MP3", converting: "جاري التحويل...", dlThumbBtn: "تحميل الصورة",
                 historyTitle: "سجل التحميلات", historyBtn: "السجل", trimStart: "بداية (مثال: 7)", trimEnd: "نهاية (مثال: 12)",
-                playAudioMP3: "🎵 صوت MP3", playVideoHD: "🎬 فيديو عالي الدقة", playVideoSD: "🎬 فيديو جودة عادية", emptyHistory: "لا توجد تحميلات سابقة.",
+                playAudioMP3: "صوت MP3", playVideoHD: "فيديو عالي الدقة", playVideoSD: "فيديو جودة عادية", emptyHistory: "لا توجد تحميلات سابقة.",
                 min: "دقائق", sec: "ثواني",
                 vaultTitle: `<i class="fas fa-lock"></i> خزنة الملفات`, vaultDesc: "لو قفلت الصفحة بالغلط، اكتب رقم تذكرتك هنا واستلم ملفك الجاهز.",
                 vaultInput: "مثال: Ticket_123456", vaultBtn: `<i class="fas fa-box-open"></i> استرجاع الملف`,
                 ticketLabel: "تذكرتك (انسخها لو هتقفل):", terms: "شروط الاستخدام وإخلاء المسؤولية",
                 vidTitlePh: "اسم الفيديو...", vidTitleTooltip: "يمكنك تعديل اسم الملف قبل التحميل",
-                trimFrom: "قص من", trimTo: "قص إلى", progressPrep: "جاري التجهيز... ", progressDone: "✅ اكتمل! جاري حفظ الملف...",
+                trimFrom: "قص من", trimTo: "قص إلى", progressPrep: "جاري التجهيز... ", progressDone: "اكتمل! جاري حفظ الملف...",
                 progressDL: "جاري التحميل... ", noFormats: "لا توجد جودات متاحة", alertVault: "أدخل رقم التذكرة أولاً!",
                 alertConv: "حدث خطأ أثناء التحويل", vidReady: "فيديو جاهز", defaultName: "Nexus_Media",
                 apiBtn: "مفتاح API", apiTitle: "<i class='fas fa-key'></i> مفتاح الاشتراك", apiDesc: "أدخل مفتاح الاشتراك (API Key) الخاص بك للتمتع بخدمات التحميل.",
@@ -337,13 +340,13 @@
                 sourceYT: "YouTube", sourceTK: "TikTok", sourceIG: "Instagram", sourceFB: "Facebook", sourceX: "X (Twitter)", sourceUnknown: "Video",
                 convertBtn: "Convert MP3", converting: "Converting...", dlThumbBtn: "Cover Image",
                 historyTitle: "Download History", historyBtn: "History", trimStart: "Start (ex: 7)", trimEnd: "End (ex: 12)",
-                playAudioMP3: "🎵 Audio MP3", playVideoHD: "🎬 Video HD", playVideoSD: "🎬 Video SD", emptyHistory: "No download history found.",
+                playAudioMP3: "Audio MP3", playVideoHD: "Video HD", playVideoSD: "Video SD", emptyHistory: "No download history found.",
                 min: "Mins", sec: "Secs",
                 vaultTitle: `<i class="fas fa-lock"></i> File Vault`, vaultDesc: "If you closed the page by mistake, enter your ticket ID here to get your file.",
                 vaultInput: "Example: Ticket_123456", vaultBtn: `<i class="fas fa-box-open"></i> Restore File`,
                 ticketLabel: "Your Ticket (copy it if you leave):", terms: "Terms of Use & Disclaimer",
                 vidTitlePh: "Video Name...", vidTitleTooltip: "You can edit the file name before downloading",
-                trimFrom: "Trim From", trimTo: "Trim To", progressPrep: "Preparing... ", progressDone: "✅ Done! Saving file...",
+                trimFrom: "Trim From", trimTo: "Trim To", progressPrep: "Preparing... ", progressDone: "Completed! Saving file...",
                 progressDL: "Downloading... ", noFormats: "No formats available", alertVault: "Enter ticket ID first!",
                 alertConv: "Error during conversion", vidReady: "Video Ready", defaultName: "Nexus_Media",
                 apiBtn: "API Key", apiTitle: "<i class='fas fa-key'></i> Subscription Key", apiDesc: "Enter your subscription API Key to enable downloading services.",
@@ -360,9 +363,6 @@
         function toggleTheme() { currentTheme = currentTheme === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', currentTheme); localStorage.setItem('nexus_theme', currentTheme); updateThemeIcon(); }
         function updateThemeIcon() { document.getElementById('themeIcon').className = currentTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun'; }
         
-        // =================================================================
-        // 🚀 دوال التحكم في نافذة المفتاح (API Modal)
-        // =================================================================
         function toggleApiModal() {
             const modal = document.getElementById('apiModal');
             document.getElementById('apiKeyInput').value = API_KEY;
@@ -445,10 +445,11 @@
             renderHistory();
         }
 
+        // 🎨 دالة تحديث شكل الـ History
         function renderHistory() {
             const t = translations[currentLang]; const list = document.getElementById('historyList');
             let history = JSON.parse(localStorage.getItem('nexus_history')) || [];
-            if (history.length === 0) { list.innerHTML = `<p style="text-align:center; color:var(--text-muted);">${t.emptyHistory}</p>`; return; }
+            if (history.length === 0) { list.innerHTML = `<p style="text-align:center; color:var(--text-muted); padding: 20px;">${t.emptyHistory}</p>`; return; }
             list.innerHTML = '';
             const fallbackImg = "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=500&auto=format&fit=crop";
             history.forEach(item => {
@@ -456,10 +457,10 @@
                 list.innerHTML += `
                 <div class="history-item">
                     <img src="${imgSrc}" onerror="this.src='${fallbackImg}'" alt="thumb">
-                    <div>${item.title}</div>
-                    <div style="display: flex; gap: 15px; align-items: center;">
-                        <a href="#" title="تحميل" onclick="document.getElementById('videoUrl').value='${item.url}'; toggleHistory(); analyzeUrl();" style="color:var(--neon-blue);"><i class="fas fa-download"></i></a>
-                        <a href="#" title="حذف" onclick="deleteHistoryItem('${item.url}')" style="color:#ff3366;"><i class="fas fa-trash"></i></a>
+                    <div class="history-info">${item.title}</div>
+                    <div class="history-actions">
+                        <a href="#" class="dl-btn" title="تحميل" onclick="document.getElementById('videoUrl').value='${item.url}'; toggleHistory(); analyzeUrl();"><i class="fas fa-download"></i></a>
+                        <a href="#" class="del-btn" title="حذف" onclick="deleteHistoryItem('${item.url}')"><i class="fas fa-trash"></i></a>
                     </div>
                 </div>`;
             });
@@ -472,6 +473,7 @@
             return val;
         }
 
+        // 🚀 إصلاح مشكلة التحويل لصوت
         async function handleLocalConversion(input) {
             if (!API_KEY) { alert(translations[currentLang].alertNoKey); toggleApiModal(); return; }
             if (!input.files || input.files.length === 0) return;
@@ -484,10 +486,11 @@
             btn.disabled = true;
 
             const formData = new FormData();
-            formData.append('video', file); formData.append('quality', quality); formData.append('apikey', API_KEY);
+            formData.append('video', file); formData.append('quality', quality);
 
             try {
-                const response = await fetch(CONVERT_URL, { method: 'POST', body: formData });
+                // تمرير مفتاح الـ API في الرابط نفسه
+                const response = await fetch(`${CONVERT_URL}?apikey=${API_KEY}`, { method: 'POST', body: formData });
                 if (!response.ok) throw new Error('Conversion failed');
                 const blob = await response.blob();
                 const url = window.URL.createObjectURL(blob);
@@ -524,7 +527,7 @@
                 if (e.data === 'DONE') {
                     btnElement.innerHTML = `<i class="fas fa-check"></i>`; btnElement.disabled = false;
                     document.getElementById('progressFill').style.width = '100%';
-                    document.getElementById('progressText').innerText = t.progressDone;
+                    document.getElementById('progressText').innerText = t.progressDone; // تم إزالة الإيموجي من هنا
                     evtSource.close(); setTimeout(() => { btnElement.innerHTML = originalHtml; }, 3000);
                 } else {
                     const percent = e.data; btnElement.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${percent}%`;
@@ -534,7 +537,6 @@
             };
             evtSource.onerror = function() { evtSource.close(); };
             
-            // 🚀 إضافة الطول والعرض لـ URL عشان السيرفر يتأكد من الباقة
             let dlUrl = `${DOWNLOAD_URL}?url=${encodeURIComponent(currentVideoUrl)}&format_id=${formatInfo.format_id || formatInfo.id}&type=${formatInfo.type}&needsMerge=${formatInfo.needsMerge}&customName=${encodeURIComponent(customTitle)}&clientId=${clientId}&ticketId=${ticketId}&apikey=${API_KEY}&height=${formatInfo.height || 0}&abr=${formatInfo.abr || 0}`;
             if(trimStart) dlUrl += `&trimStart=${encodeURIComponent(trimStart)}`;
             if(trimEnd) dlUrl += `&trimEnd=${encodeURIComponent(trimEnd)}`;
@@ -609,7 +611,7 @@
             const iframe = document.createElement('iframe'); iframe.style.display = 'none'; iframe.src = dlUrl; document.body.appendChild(iframe);
         }
 
-        // 🚀 تعديل الدالة لإضافة زر القفل لو الجودة مش متاحة 🚀
+        // 🚀 بناء جدول الجودات وإضافة زرار القفل لو الجودة معدية الخطة
         function buildDynamicTable() {
             const tbody = document.getElementById('tableBody'); const t = translations[currentLang]; 
             tbody.innerHTML = '';
@@ -621,7 +623,6 @@
                 const nameClass = isAudio ? 'q-name audio' : 'q-name'; const btnClass = isAudio ? 'btn-dl-small audio-btn' : 'btn-dl-small video-btn';
                 
                 let btnHtml = '';
-                // لو السيرفر سمح بيها، بيظهر زر التحميل، لو لأ بيظهر زر مقفول
                 if (f.isAllowed || f.isAllowed === undefined) {
                     btnHtml = `<button class="${btnClass}" onclick="fetchMergedDownload(${index}, this)">
                                   <i class="fas fa-download"></i> <span class="t-dlBtnText">${t.dlBtn}</span>
@@ -639,34 +640,6 @@
                         <td><span class="q-format">${f.size}</span></td>
                         <td>${btnHtml}</td>
                     </tr>`;
-            });
-        }
-
-        function buildPlaylistUI(entries, title) {
-            const t = translations[currentLang]; const container = document.getElementById('playlistItems');
-            document.getElementById('playlistTitleDisplay').innerText = title; container.innerHTML = '';
-            entries.forEach((e, idx) => {
-                const inputId = `pl_title_${idx}`; const selectId = `pl_select_${idx}`; const clientId = `pl_client_${Date.now()}_${idx}`;
-                const fallbackImg = "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=500&auto=format&fit=crop";
-                const imgUrl = e.thumbnail ? `${PROXY_URL}?url=${encodeURIComponent(e.thumbnail)}&apikey=${API_KEY}` : fallbackImg;
-                container.innerHTML += `
-                    <div class="playlist-item">
-                        <img src="${imgUrl}" onerror="this.src='${fallbackImg}'">
-                        <div class="playlist-info">
-                            <input type="text" class="video-title-input" id="${inputId}" value="${e.title}">
-                        </div>
-                        <div class="playlist-actions">
-                            <select id="${selectId}" class="playlist-select">
-                                <option value="bestaudio/best" selected>${t.playAudioMP3}</option>
-                                <option value="bestvideo[height<=1080]+bestaudio/best">${t.playVideoHD}</option>
-                                <option value="bestvideo[height<=480]+bestaudio/best">${t.playVideoSD}</option>
-                            </select>
-                            <button class="btn-dl-small" onclick="downloadPlaylistItem(this, '${e.url}', '${inputId}', '${selectId}', '${clientId}')">
-                                <i class="fas fa-download"></i> ${t.dlBtn}
-                            </button>
-                        </div>
-                    </div>
-                `;
             });
         }
 
@@ -725,7 +698,7 @@
         initApp();
     </script>
 <div style="text-align: center; margin-top: 30px; padding-bottom: 20px;">
-    <a href="terms.html" id="t-terms" style="color: var(--text-muted); text-decoration: none; font-size: 14px; transition: 0.3s;" onmouseover="this.style.color='var(--neon-blue)'" onmouseout="this.style.color='var(--text-muted)'">شروط الاستخدام وإخلاء المسؤولية</a>
+    <a href="terms.html" id="t-terms" style="color: var(--text-muted); text-decoration: none; font-size: 14px; transition: 0.3s;" onmouseover="this.style.color='var(--neon-blue)'" onmouseout="this.style.color='var(--text-muted)'">Terms of Use and Disclaimer</a>
 </div>
 </body>
 </html>
