@@ -524,10 +524,17 @@
 
             const evtSource = new EventSource(`${BACKEND_URL.replace('/info', '/progress')}?id=${clientId}`);
             evtSource.onmessage = function(e) {
-                if (e.data === 'DONE') {
+                if (e.data === 'DONE' || e.data === 'DONE_SUBS') {
+                    if (e.data === 'DONE_SUBS') {
+                        const subUrl = `${BASE_SERVER}/api/subtitle?ticketId=${ticketId}&customName=${encodeURIComponent(customTitle)}&apikey=${API_KEY}`;
+                        const subIframe = document.createElement('iframe'); 
+                        subIframe.style.display = 'none'; 
+                        subIframe.src = subUrl; 
+                        document.body.appendChild(subIframe);
+                    }
                     btnElement.innerHTML = `<i class="fas fa-check"></i>`; btnElement.disabled = false;
                     document.getElementById('progressFill').style.width = '100%';
-                    document.getElementById('progressText').innerText = t.progressDone; // تم إزالة الإيموجي من هنا
+                    document.getElementById('progressText').innerText = t.progressDone;
                     evtSource.close(); setTimeout(() => { btnElement.innerHTML = originalHtml; }, 3000);
                 } else {
                     const percent = e.data; btnElement.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${percent}%`;
@@ -599,7 +606,14 @@
             btnElement.disabled = true; btnElement.innerHTML = `<i class="fas fa-spinner fa-spin"></i> 0%`;
             const evtSource = new EventSource(`${BACKEND_URL.replace('/info', '/progress')}?id=${clientId}`);
             evtSource.onmessage = function(e) {
-                if (e.data === 'DONE') {
+                if (e.data === 'DONE' || e.data === 'DONE_SUBS') {
+                    if (e.data === 'DONE_SUBS') {
+                        const subUrl = `${BASE_SERVER}/api/subtitle?ticketId=${ticketId}&customName=${encodeURIComponent(customTitle)}&apikey=${API_KEY}`;
+                        const subIframe = document.createElement('iframe'); 
+                        subIframe.style.display = 'none'; 
+                        subIframe.src = subUrl; 
+                        document.body.appendChild(subIframe);
+                    }
                     btnElement.innerHTML = `<i class="fas fa-check"></i>`; btnElement.disabled = false;
                     evtSource.close(); setTimeout(() => { btnElement.innerHTML = originalHtml; }, 3000);
                 } else { btnElement.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${e.data}%`; }
