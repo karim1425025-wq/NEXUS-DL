@@ -1,0 +1,163 @@
+/* ===== options-table.css — خيارات اللغة/الكابشن + جدول الجودات + أزرار التحميل ===== */
+        /* 🌍 Language & Caption Options */
+        .options-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .option-select {
+            flex: 1;
+            min-width: 150px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px 12px;
+            border-radius: 8px;
+            outline: none;
+            font-family: 'Cairo', sans-serif;
+            cursor: pointer;
+        }
+
+        .option-select:focus {
+            border-color: var(--neon-purple);
+        }
+
+        .option-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+
+        .caption-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: rgba(188, 19, 254, 0.08);
+            border: 1px solid rgba(188, 19, 254, 0.2);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .caption-toggle:hover {
+            border-color: var(--neon-purple);
+            background: rgba(188, 19, 254, 0.15);
+        }
+
+        .caption-toggle input[type="checkbox"] {
+            accent-color: var(--neon-purple);
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .caption-toggle label {
+            color: var(--text-main);
+            font-size: 0.9rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .qualities-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .qualities-table th {
+            text-align: right;
+            padding: 12px;
+            border-bottom: 2px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        html[dir="ltr"] .qualities-table th {
+            text-align: left;
+        }
+
+        .qualities-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        .qualities-table tr:hover {
+            background-color: var(--row-hover);
+        }
+
+        .q-name {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            direction: ltr;
+            justify-content: flex-end;
+        }
+
+        html[dir="ltr"] .q-name {
+            justify-content: flex-start;
+        }
+
+        .q-name i {
+            color: var(--neon-blue);
+        }
+
+        .q-name.audio i {
+            color: var(--neon-purple);
+        }
+
+        .q-format {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            direction: ltr;
+            display: inline-block;
+        }
+
+        .btn-dl-small {
+            background: rgba(0, 243, 255, 0.1);
+            border: 1px solid var(--neon-blue);
+            color: var(--neon-blue);
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            width: 120px;
+            transition: 0.3s;
+        }
+
+        .btn-dl-small:hover {
+            background: var(--neon-blue);
+            color: #000;
+        }
+
+        .btn-dl-small.audio-btn {
+            background: rgba(188, 19, 254, 0.1);
+            border-color: var(--neon-purple);
+            color: var(--neon-purple);
+        }
+
+        .btn-dl-small.audio-btn:hover {
+            background: var(--neon-purple);
+            color: #fff;
+        }
+
+        .btn-dl-small:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            background: rgba(0, 0, 0, 0.5) !important;
+            color: var(--text-main) !important;
+            border-color: var(--text-muted) !important;
+        }
+

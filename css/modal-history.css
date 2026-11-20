@@ -1,0 +1,159 @@
+/* ===== modal-history.css — نافذة السجل + عناصر الهيستوري والـ Playlist ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            padding: 30px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .close-btn {
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        .close-btn:hover {
+            color: #ff3366;
+        }
+
+        /* 🎨 History window */
+        #historyList {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .history-item {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: 0.3s;
+        }
+
+        .history-item:hover {
+            border-color: var(--neon-blue);
+            transform: translateY(-2px);
+        }
+
+        .history-item img {
+            width: 80px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .history-info {
+            flex: 1;
+            font-size: 0.9rem;
+            font-weight: bold;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .history-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .history-actions a {
+            padding: 8px 10px;
+            border-radius: 6px;
+            background: var(--input-bg);
+            transition: 0.3s;
+            text-decoration: none;
+        }
+
+        .history-actions a.dl-btn {
+            color: var(--neon-blue);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+        }
+
+        .history-actions a.dl-btn:hover {
+            background: var(--neon-blue);
+            color: #000;
+        }
+
+        .history-actions a.del-btn {
+            color: #ff3366;
+            border: 1px solid rgba(255, 51, 102, 0.2);
+        }
+
+        .history-actions a.del-btn:hover {
+            background: #ff3366;
+            color: #fff;
+        }
+
+        .playlist-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .playlist-item img {
+            width: 120px;
+            border-radius: 8px;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+        }
+
+        .playlist-info {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .playlist-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .playlist-select {
+            padding: 8px;
+            border-radius: 8px;
+            background: var(--input-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            outline: none;
+        }
+

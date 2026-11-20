@@ -1,0 +1,70 @@
+/* ===== responsive.css — شاشات الموبايل (Media Queries) ===== */
+        @media (max-width: 600px) {
+            .video-preview {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .thumb-container {
+                width: 100%;
+                aspect-ratio: 16/9;
+                margin-bottom: 15px;
+            }
+
+            .qualities-table th {
+                display: none;
+            }
+
+            .qualities-table td {
+                display: block;
+                text-align: center;
+                padding: 8px;
+                border: none;
+            }
+
+            .qualities-table tr {
+                border-bottom: 1px solid var(--border-color);
+                padding: 10px 0;
+                display: block;
+            }
+
+            .q-name {
+                justify-content: center;
+                margin-bottom: 5px;
+            }
+
+            .btn-dl-small {
+                width: 100%;
+                margin-top: 10px;
+            }
+
+            .nav-controls {
+                justify-content: center;
+            }
+
+            .playlist-item {
+                flex-direction: column;
+            }
+
+            .playlist-item img {
+                width: 100%;
+            }
+
+            .playlist-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .trim-group {
+                flex-wrap: wrap;
+            }
+
+            .options-row {
+                flex-direction: column;
+            }
+
+            .tab-bar {
+                overflow-x: auto;
+            }
+        }

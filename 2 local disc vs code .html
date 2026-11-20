@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="html-root">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Nexus-DL </title>
+    <link rel="icon" type="image/png" href="icon.png">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Orbitron:wght@500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/input-result.css">
+    <link rel="stylesheet" href="css/options-table.css">
+    <link rel="stylesheet" href="css/modal-history.css">
+    <link rel="stylesheet" href="css/vault-progress.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-logo" onclick="resetAppView()" style="cursor: pointer;">NEXUS<span>-DL</span></div>
+        <div class="nav-controls">
+            <button class="control-btn" id="btnHistory" onclick="toggleHistory()" title="سجل التحميلات">
+                <i class="fas fa-history"></i> <span id="t-history">سجل التحميلات</span>
+            </button>
+
+            <select id="audioQuality" class="control-btn glass-select">
+                <option value="32k">32 kbps</option>
+                <option value="48k">48 kbps</option>
+                <option value="64k">64 kbps</option>
+                <option value="128k" selected>128 kbps</option>
+                <option value="320k">320 kbps</option>
+            </select>
+
+            <input type="file" id="localFileInput" accept="video/*" style="display: none;"
+                onchange="handleLocalConversion(this)">
+            <button class="control-btn" id="convertToggle" onclick="document.getElementById('localFileInput').click()"
+                title="تحويل فيديو لصوت من الجهاز">
+                <i class="fas fa-headphones"></i> <span id="convertText">تحويل MP3</span>
+            </button>
+
+            <button class="control-btn" id="langToggle" onclick="toggleLanguage()"><i class="fas fa-globe"></i> <span
+                    id="langText">English</span></button>
+            <button class="control-btn" id="themeToggle" onclick="toggleTheme()"><i class="fas fa-moon"
+                    id="themeIcon"></i></button>
+        </div>
+    </nav>
+
+    <div class="modal" id="historyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="t-historyTitle">سجل التحميلات</span>
+                <i class="fas fa-times close-btn" onclick="toggleHistory()"></i>
+            </div>
+            <div id="historyList"></div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="glass-card">
+            <h1 class="title" id="t-title">تحميل الفيديوهات</h1>
+            <p class="subtitle" id="t-subtitle">حمل فيديوهاتك المفضلة بسرعة وبأعلى جودة</p>
+
+            <div class="platforms">
+                <i class="fab fa-youtube"></i> <i class="fab fa-tiktok"></i> <i class="fab fa-instagram"></i> <i
+                    class="fab fa-facebook-f"></i> <i class="fa-brands fa-x-twitter"></i>
+            </div>
+
+            <!-- ===== TAB BAR ===== -->
+            <div class="tab-bar" id="tabBar">
+                <button class="tab-btn-add" id="btnAddTab" onclick="addNewTab()" title="فتح تب جديد">+</button>
+            </div>
+
+            <!-- ===== TAB PANELS CONTAINER ===== -->
+            <div id="tabPanels"></div>
+
+            <!-- ===== FILE VAULT ===== -->
+            <div class="vault-card">
+                <h3 id="t-vaultTitle"><i class="fas fa-lock"></i> خزنة الملفات</h3>
+                <p id="t-vaultDesc">لو قفلت الصفحة بالغلط، اكتب رقم تذكرتك هنا واستلم ملفك الجاهز.</p>
+                <input type="text" id="vaultTicketInput" class="vault-input" placeholder="مثال: Ticket_123456">
+                <br>
+                <button class="btn-vault" id="t-vaultBtn" onclick="restoreFromVault()"><i class="fas fa-box-open"></i>
+                    استرجاع الملف</button>
+                <p id="vaultMsg"
+                    style="color: var(--neon-blue); font-size: 0.9rem; margin-top: 10px; display: none; font-weight: bold;">
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+
+    <script src="js/config.js"></script>
+    <script src="js/tabs.js"></script>
+    <script src="js/theme-language.js"></script>
+    <script src="js/analyze.js"></script>
+    <script src="js/download.js"></script>
+    <script src="js/history-vault.js"></script>
+    <script src="js/app.js"></script>
+
+    <div style="text-align: center; margin-top: 30px; padding-bottom: 20px;">
+        <a href="terms.html" id="t-terms"
+            style="color: var(--text-muted); text-decoration: none; font-size: 14px; transition: 0.3s;"
+            onmouseover="this.style.color='var(--neon-blue)'" onmouseout="this.style.color='var(--text-muted)'">Terms of
+            Use and Disclaimer</a>
+    </div>
+</body>
+
+</html>
